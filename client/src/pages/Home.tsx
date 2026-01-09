@@ -4,6 +4,7 @@
   Features: Hero with actual photo, social proof, credentials, email capture
 */
 
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowRight, Globe, BookOpen, Users, Mic, Award, GraduationCap, Building, CheckCircle } from "lucide-react";
@@ -74,6 +75,10 @@ const testimonials = [
 ];
 
 export default function Home() {
+  // The userAuth hooks provides authentication state
+  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   const [email, setEmail] = useState("");
 
   const handleSubscribe = (e: React.FormEvent) => {

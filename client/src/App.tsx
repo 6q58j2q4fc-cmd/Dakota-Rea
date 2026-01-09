@@ -12,8 +12,8 @@ import Books from "./pages/Books";
 import Foundation from "./pages/Foundation";
 import Contact from "./pages/Contact";
 import Press from "./pages/Press";
-
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={Home} />
