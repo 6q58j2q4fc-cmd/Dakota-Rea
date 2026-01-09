@@ -1,90 +1,93 @@
 /*
-  DESIGN: Bold Authority + Modern Sophistication
-  Home Page: High-converting landing page with strong CTAs
-  Features: Hero with blended image, interactive elements, smooth animations
+  DESIGN: AI Research Expert + High-Demand Consultant
+  Home Page: Premium consultant branding with research credibility
+  Features: Clean hero, research credentials, AI expertise showcase
 */
 
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Link } from "wouter";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Globe, Award, Building, CheckCircle, Sparkles, Brain, Shield, Zap, ChevronDown, Play, ArrowUpRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Globe, Award, Building, CheckCircle, Brain, Shield, Zap, ChevronDown, ExternalLink, Newspaper, BookOpen, Microscope, TrendingUp } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const stats = [
   { number: "50+", label: "Enterprise Clients", icon: Building },
-  { number: "$2B+", label: "AI Value Delivered", icon: Award },
-  { number: "60+", label: "Countries Served", icon: Globe },
-  { number: "200+", label: "AI Implementations", icon: CheckCircle },
+  { number: "$2B+", label: "AI Value Delivered", icon: TrendingUp },
+  { number: "60+", label: "Countries", icon: Globe },
+  { number: "200+", label: "AI Projects", icon: CheckCircle },
 ];
 
 const credentials = [
   { 
     institution: "Harvard University", 
-    role: "Business School Graduate & Alumni Researcher",
-    color: "oklch(0.55 0.15 15)"
+    role: "Business School Graduate & AI Research Fellow",
+    type: "Education"
   },
   { 
     institution: "University of Oxford", 
     role: "Jeremy Bentham Scholar 2025",
-    color: "oklch(0.45 0.12 250)"
+    type: "Research"
   },
   { 
     institution: "MIT", 
-    role: "AI Ethics Certification",
-    color: "oklch(0.55 0.18 30)"
+    role: "AI Ethics & Governance Certification",
+    type: "Certification"
   },
   { 
     institution: "Wharton School", 
-    role: "Aresty Institute Certification",
-    color: "oklch(0.50 0.15 250)"
+    role: "Aresty Institute Executive Program",
+    type: "Certification"
   },
 ];
 
-const services = [
+const expertise = [
   {
-    title: "AI Strategy Consulting",
-    description: "Enterprise AI strategy development, GenAI implementation roadmaps, and digital transformation advisory.",
-    href: "/consulting",
+    title: "AI Strategy & Transformation",
+    description: "Enterprise AI roadmaps, GenAI implementation strategies, and digital transformation leadership for Fortune 500 organizations.",
     icon: Brain,
-    gradient: "from-amber-500 to-orange-600",
+    tags: ["GenAI", "LLMs", "Enterprise AI"],
   },
   {
     title: "AI Ethics & Governance",
-    description: "Responsible AI frameworks, bias auditing, and ethical AI governance for compliant systems.",
-    href: "/consulting",
+    description: "Responsible AI frameworks, algorithmic auditing, bias mitigation, and regulatory compliance consulting.",
     icon: Shield,
-    gradient: "from-blue-500 to-indigo-600",
+    tags: ["Responsible AI", "Compliance", "Risk"],
   },
   {
     title: "AI Product Development",
-    description: "End-to-end AI product strategy, LLM integration, agentic AI systems, and custom solutions.",
-    href: "/consulting",
+    description: "End-to-end AI product strategy, from ideation to deployment. Custom LLM solutions and agentic AI systems.",
     icon: Zap,
-    gradient: "from-emerald-500 to-teal-600",
+    tags: ["Product Strategy", "LLM Apps", "Agents"],
   },
+];
+
+const researchAreas = [
+  "Large Language Model Alignment",
+  "AI Safety & Robustness",
+  "Ethical AI Frameworks",
+  "Human-AI Collaboration",
+  "AI Governance Policy",
+  "Algorithmic Fairness",
 ];
 
 const testimonials = [
   {
-    quote: "Dakota's AI strategy transformed our entire approach to digital transformation. His insights are invaluable.",
+    quote: "Dakota's AI strategy transformed our entire approach to digital transformation. His research background gives him insights that pure consultants simply don't have.",
     author: "Sarah Chen",
     role: "CTO, Fortune 500 Tech Company",
-    image: null,
   },
   {
-    quote: "When it comes to understanding AI ethics and implementation, Dakota Rea is in a league of ONE.",
-    author: "Mike Lewis",
-    role: "VP Innovation, Global Consulting Firm",
-    image: null,
+    quote: "A rare combination of academic rigor and practical business acumen. Dakota helped us navigate AI implementation with confidence.",
+    author: "Michael Torres",
+    role: "VP Innovation, Global Financial Services",
   },
   {
-    quote: "Dakota is a highly-motivated, trust-worthy entrepreneur. He's very knowledgeable and skilled in AI strategy.",
-    author: "Holly Mann",
-    role: "Chief Digital Officer",
-    image: null,
+    quote: "Dakota's ethical AI framework became the foundation of our responsible AI program. His work is genuinely world-class.",
+    author: "Dr. Emily Watson",
+    role: "Chief AI Officer, Healthcare Enterprise",
   },
 ];
 
@@ -92,239 +95,370 @@ export default function Home() {
   let { user, loading, error, isAuthenticated, logout } = useAuth();
   const [email, setEmail] = useState("");
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const heroRef = useRef<HTMLDivElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
-  
-  const imageY = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const textY = useTransform(scrollYProgress, [0, 1], [0, 50]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      toast.success("Welcome! Check your inbox for exclusive insights.");
+      toast.success("Welcome! Check your inbox for exclusive AI insights.");
       setEmail("");
     }
   };
 
-  const scrollToServices = () => {
-    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToExpertise = () => {
+    document.getElementById('expertise')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ backgroundColor: "oklch(0.99 0.005 90)" }}>
+    <div className="min-h-screen bg-background">
       <Navigation />
 
-      {/* Hero Section - Full Bleed with Image Integration */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Background gradient that blends with image */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent z-10 lg:w-3/5" />
-        
-        {/* Hero Image - Full bleed on right */}
-        <motion.div 
-          style={{ y: imageY }}
-          className="absolute right-0 top-0 w-full lg:w-3/5 h-full"
-        >
-          <div className="relative w-full h-full">
-            <img
-              src="/images/dakota-rea-portrait.jpg"
-              alt="Dakota Rea - AI Strategy Consultant"
-              className="w-full h-full object-cover object-top"
-            />
-            {/* Gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent lg:from-transparent" />
-            {/* Subtle color overlay for brand consistency */}
-            <div className="absolute inset-0 mix-blend-multiply opacity-10" style={{ backgroundColor: "oklch(0.72 0.14 85)" }} />
-          </div>
-        </motion.div>
-
-        {/* Content */}
-        <motion.div 
-          style={{ y: textY, opacity }}
-          className="container relative z-20 pt-32 pb-20"
-        >
-          <div className="max-w-2xl">
-            {/* Animated badges */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-wrap gap-3 mb-8"
-            >
-              {["AI Strategy", "GenAI Expert", "Harvard & Oxford"].map((badge, i) => (
-                <motion.span
-                  key={badge}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 + i * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  className="px-4 py-2 text-sm font-medium tracking-wide uppercase cursor-default"
-                  style={{ 
-                    backgroundColor: "oklch(0.15 0.03 250)",
-                    color: "oklch(0.97 0.01 90)"
-                  }}
-                >
-                  {badge}
-                </motion.span>
-              ))}
-            </motion.div>
+      {/* Hero Section - Clean Split Layout */}
+      <section className="relative min-h-screen">
+        <div className="container pt-32 pb-20 lg:pt-40 lg:pb-32">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
-            <motion.h1 
+            {/* Left Content - 7 columns */}
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6"
-              style={{ color: "oklch(0.15 0.03 250)" }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-7 order-2 lg:order-1"
             >
-              Transform Your Business with{" "}
-              <span className="relative inline-block">
-                <span className="gradient-text">Ethical AI</span>
-                <motion.span
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ delay: 1, duration: 0.8 }}
-                  className="absolute bottom-2 left-0 h-3 -z-10 opacity-30"
-                  style={{ backgroundColor: "oklch(0.72 0.14 85)" }}
-                />
-              </span>
-            </motion.h1>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="font-body text-xl leading-relaxed mb-10"
-              style={{ color: "oklch(0.35 0.02 250)" }}
-            >
-              I help Fortune 500 companies and ambitious startups implement AI strategies 
-              that are powerful, responsible, and built to last. From GenAI roadmaps to 
-              ethical governance frameworks.
-            </motion.p>
-            
-            {/* Interactive CTAs */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="flex flex-wrap gap-4 mb-12"
-            >
-              <Link href="/consulting">
-                <motion.span
-                  whileHover={{ scale: 1.03, x: 5 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group inline-flex items-center gap-3 px-8 py-4 font-semibold text-lg transition-all duration-300 cursor-pointer"
-                  style={{ 
-                    backgroundColor: "oklch(0.72 0.14 85)",
-                    color: "oklch(0.15 0.03 250)"
-                  }}
-                >
-                  Start Your AI Journey
-                  <ArrowRight className="transition-transform group-hover:translate-x-1" size={20} />
-                </motion.span>
-              </Link>
-              <Link href="/speaking">
-                <motion.span
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group inline-flex items-center gap-3 px-8 py-4 font-semibold text-lg border-2 transition-all duration-300 cursor-pointer"
-                  style={{ 
-                    borderColor: "oklch(0.15 0.03 250)",
-                    color: "oklch(0.15 0.03 250)",
-                    backgroundColor: "transparent"
-                  }}
-                >
-                  <Play size={18} />
-                  Watch My Talks
-                </motion.span>
-              </Link>
+              {/* Role Tags */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold tracking-wide uppercase rounded-full" style={{ backgroundColor: "oklch(0.15 0.03 250)", color: "oklch(0.97 0.01 90)" }}>
+                  <Microscope size={12} />
+                  AI Researcher
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold tracking-wide uppercase rounded-full" style={{ backgroundColor: "oklch(0.72 0.14 85)", color: "oklch(0.15 0.03 250)" }}>
+                  <TrendingUp size={12} />
+                  Strategy Consultant
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold tracking-wide uppercase rounded-full border" style={{ borderColor: "oklch(0.15 0.03 250)", color: "oklch(0.15 0.03 250)" }}>
+                  <BookOpen size={12} />
+                  Published Author
+                </span>
+              </div>
+
+              {/* Main Headline */}
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>
+                AI Researcher Turned
+                <br />
+                <span style={{ color: "oklch(0.72 0.14 85)" }}>Enterprise Strategist</span>
+              </h1>
+
+              {/* Subheadline */}
+              <p className="text-lg md:text-xl leading-relaxed mb-8 max-w-xl" style={{ fontFamily: "'DM Sans', sans-serif", color: "oklch(0.35 0.02 250)" }}>
+                I bridge the gap between cutting-edge AI research and real-world business impact. 
+                Harvard and Oxford trained, helping Fortune 500 companies implement AI that's 
+                powerful, ethical, and built to scale.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap gap-4 mb-10">
+                <Link href="/consulting">
+                  <motion.span
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 font-semibold text-base cursor-pointer transition-all duration-300"
+                    style={{ 
+                      backgroundColor: "oklch(0.72 0.14 85)",
+                      color: "oklch(0.15 0.03 250)",
+                      boxShadow: "0 4px 14px oklch(0.72 0.14 85 / 0.3)"
+                    }}
+                  >
+                    Book a Strategy Call
+                    <ArrowRight size={18} />
+                  </motion.span>
+                </Link>
+                <Link href="/ai-news">
+                  <motion.span
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 font-semibold text-base border-2 cursor-pointer transition-all duration-300"
+                    style={{ 
+                      borderColor: "oklch(0.15 0.03 250)",
+                      color: "oklch(0.15 0.03 250)",
+                      backgroundColor: "transparent"
+                    }}
+                  >
+                    <Newspaper size={18} />
+                    Latest AI News
+                  </motion.span>
+                </Link>
+              </div>
+
+              {/* Quick Stats Row */}
+              <div className="flex flex-wrap gap-8 pt-6 border-t" style={{ borderColor: "oklch(0.90 0.01 90)" }}>
+                <div>
+                  <p className="text-2xl font-bold" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>50+</p>
+                  <p className="text-sm" style={{ color: "oklch(0.45 0.02 250)" }}>Enterprise Clients</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>$2B+</p>
+                  <p className="text-sm" style={{ color: "oklch(0.45 0.02 250)" }}>AI Value Created</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>60+</p>
+                  <p className="text-sm" style={{ color: "oklch(0.45 0.02 250)" }}>Countries</p>
+                </div>
+              </div>
             </motion.div>
 
-            {/* Trust indicators */}
+            {/* Right Image - 5 columns */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="flex items-center gap-8"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="lg:col-span-5 order-1 lg:order-2"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 1 + i * 0.1 }}
-                      className="w-10 h-10 rounded-full border-2 border-white shadow-md"
-                      style={{ backgroundColor: `oklch(0.${55 + i * 8} 0.12 ${50 + i * 30})` }}
-                    />
-                  ))}
+              <div className="relative">
+                {/* Image Container */}
+                <div className="relative overflow-hidden" style={{ backgroundColor: "oklch(0.97 0.01 90)" }}>
+                  <img
+                    src="/images/dakota-rea-portrait.jpg"
+                    alt="Dakota Rea - AI Researcher and Strategy Consultant"
+                    className="w-full h-auto object-cover"
+                    style={{ maxHeight: "550px" }}
+                  />
+                  {/* Subtle overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
                 </div>
-                <p className="font-body text-sm" style={{ color: "oklch(0.45 0.02 250)" }}>
-                  <strong style={{ color: "oklch(0.15 0.03 250)" }}>50+</strong> enterprise clients
-                </p>
+                
+                {/* Credential Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="absolute -bottom-4 -left-4 p-4 shadow-xl"
+                  style={{ backgroundColor: "oklch(0.15 0.03 250)" }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 flex items-center justify-center" style={{ backgroundColor: "oklch(0.72 0.14 85)" }}>
+                      <Award size={20} style={{ color: "oklch(0.15 0.03 250)" }} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: "oklch(0.72 0.14 85)" }}>Oxford Scholar</p>
+                      <p className="text-sm font-medium" style={{ color: "oklch(0.97 0.01 90)" }}>Jeremy Bentham 2025</p>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Scroll indicator */}
+        {/* Scroll Indicator */}
         <motion.button
-          onClick={scrollToServices}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 cursor-pointer group"
+          onClick={scrollToExpertise}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer"
         >
-          <span className="text-sm font-medium tracking-wide uppercase" style={{ color: "oklch(0.45 0.02 250)" }}>
-            Explore Services
+          <span className="text-xs font-medium tracking-wide uppercase" style={{ color: "oklch(0.45 0.02 250)" }}>
+            Explore
           </span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
-            <ChevronDown size={24} style={{ color: "oklch(0.72 0.14 85)" }} />
+          <motion.div animate={{ y: [0, 6, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+            <ChevronDown size={20} style={{ color: "oklch(0.72 0.14 85)" }} />
           </motion.div>
         </motion.button>
       </section>
 
-      {/* Stats Section - Interactive Cards */}
-      <section className="py-20 relative" style={{ backgroundColor: "oklch(0.15 0.03 250)" }}>
+      {/* Credentials Bar */}
+      <section className="py-6 border-y" style={{ borderColor: "oklch(0.90 0.01 90)", backgroundColor: "oklch(0.97 0.01 90)" }}>
         <div className="container">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
+          <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-16">
+            {credentials.map((cred, index) => (
               <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 30 }}
+                key={cred.institution}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="p-6 text-center cursor-default transition-all duration-300"
-                style={{ backgroundColor: "oklch(0.18 0.03 250)" }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="text-center"
               >
-                <motion.div
-                  whileHover={{ rotate: [0, -10, 10, 0] }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <stat.icon className="mx-auto mb-4" size={32} style={{ color: "oklch(0.72 0.14 85)" }} />
-                </motion.div>
-                <p className="font-display text-4xl font-bold mb-2" style={{ color: "oklch(0.97 0.01 90)" }}>
-                  {stat.number}
-                </p>
-                <p className="font-body text-sm tracking-wide uppercase" style={{ color: "oklch(0.97 0.01 90 / 0.7)" }}>
-                  {stat.label}
-                </p>
+                <p className="text-sm font-bold" style={{ color: "oklch(0.15 0.03 250)" }}>{cred.institution}</p>
+                <p className="text-xs" style={{ color: "oklch(0.45 0.02 250)" }}>{cred.role}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Credentials Section - Interactive Cards */}
+      {/* Expertise Section */}
+      <section id="expertise" className="py-24">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <p className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: "oklch(0.72 0.14 85)" }}>
+              Areas of Expertise
+            </p>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>
+              Research-Driven AI Consulting
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: "oklch(0.35 0.02 250)" }}>
+              Combining academic rigor with practical business experience to deliver AI solutions that work.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {expertise.map((item, index) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Link href="/consulting">
+                  <motion.div
+                    whileHover={{ y: -8 }}
+                    className="h-full p-8 cursor-pointer transition-all duration-300 border"
+                    style={{ borderColor: "oklch(0.90 0.01 90)", backgroundColor: "white" }}
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center mb-6" style={{ backgroundColor: "oklch(0.72 0.14 85 / 0.1)" }}>
+                      <item.icon size={24} style={{ color: "oklch(0.72 0.14 85)" }} />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>
+                      {item.title}
+                    </h3>
+                    <p className="text-base mb-4" style={{ color: "oklch(0.45 0.02 250)" }}>
+                      {item.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {item.tags.map((tag) => (
+                        <span key={tag} className="px-2 py-1 text-xs font-medium" style={{ backgroundColor: "oklch(0.97 0.01 90)", color: "oklch(0.35 0.02 250)" }}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Research Focus Section */}
+      <section className="py-24" style={{ backgroundColor: "oklch(0.15 0.03 250)" }}>
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <p className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: "oklch(0.72 0.14 85)" }}>
+                Research Background
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.97 0.01 90)" }}>
+                Grounded in Academic Excellence
+              </h2>
+              <p className="text-lg mb-8" style={{ color: "oklch(0.97 0.01 90 / 0.8)" }}>
+                My consulting practice is built on a foundation of rigorous research in AI ethics, 
+                safety, and governance. This academic grounding ensures that every strategy I develop 
+                is not just effective, but responsible and future-proof.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                {researchAreas.map((area, index) => (
+                  <motion.div
+                    key={area}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    className="flex items-center gap-2"
+                  >
+                    <CheckCircle size={16} style={{ color: "oklch(0.72 0.14 85)" }} />
+                    <span className="text-sm" style={{ color: "oklch(0.97 0.01 90 / 0.9)" }}>{area}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              <Link href="/about">
+                <motion.span
+                  whileHover={{ x: 5 }}
+                  className="inline-flex items-center gap-2 font-semibold cursor-pointer"
+                  style={{ color: "oklch(0.72 0.14 85)" }}
+                >
+                  Read Full Bio
+                  <ArrowRight size={18} />
+                </motion.span>
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="grid grid-cols-2 gap-6"
+            >
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  whileHover={{ y: -4 }}
+                  className="p-6 text-center"
+                  style={{ backgroundColor: "oklch(0.18 0.03 250)" }}
+                >
+                  <stat.icon className="mx-auto mb-3" size={24} style={{ color: "oklch(0.72 0.14 85)" }} />
+                  <p className="text-3xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.97 0.01 90)" }}>
+                    {stat.number}
+                  </p>
+                  <p className="text-xs uppercase tracking-wide" style={{ color: "oklch(0.97 0.01 90 / 0.6)" }}>
+                    {stat.label}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI News Teaser */}
+      <section className="py-24">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <p className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: "oklch(0.72 0.14 85)" }}>
+              Stay Informed
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>
+              Latest AI News & Insights
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto mb-8" style={{ color: "oklch(0.35 0.02 250)" }}>
+              Curated AI news and analysis to keep you ahead of the curve. Updated daily.
+            </p>
+            <Link href="/ai-news">
+              <motion.span
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-2 px-6 py-3.5 font-semibold cursor-pointer"
+                style={{ 
+                  backgroundColor: "oklch(0.15 0.03 250)",
+                  color: "oklch(0.97 0.01 90)"
+                }}
+              >
+                <Newspaper size={18} />
+                Browse AI News
+                <ExternalLink size={16} />
+              </motion.span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
       <section className="py-24" style={{ backgroundColor: "oklch(0.97 0.01 90)" }}>
         <div className="container">
           <motion.div
@@ -333,188 +467,42 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <p className="section-label mb-4">Academic Excellence</p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold" style={{ color: "oklch(0.15 0.03 250)" }}>
-              World-Class Credentials
-            </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {credentials.map((cred, index) => (
-              <motion.div
-                key={cred.institution}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="group p-6 bg-white text-center cursor-pointer transition-all duration-300 relative overflow-hidden"
-                style={{ border: "1px solid oklch(0.90 0.01 90)" }}
-              >
-                {/* Hover accent */}
-                <motion.div
-                  initial={{ height: 0 }}
-                  whileHover={{ height: 4 }}
-                  className="absolute top-0 left-0 right-0"
-                  style={{ backgroundColor: cred.color }}
-                />
-                <Award className="mx-auto mb-4 transition-colors duration-300" size={36} style={{ color: cred.color }} />
-                <h3 className="font-display text-xl font-bold mb-2" style={{ color: "oklch(0.15 0.03 250)" }}>
-                  {cred.institution}
-                </h3>
-                <p className="font-body text-sm" style={{ color: "oklch(0.45 0.02 250)" }}>
-                  {cred.role}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section - Interactive Cards */}
-      <section id="services" className="py-24">
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <p className="section-label mb-4">AI Consulting Services</p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" style={{ color: "oklch(0.15 0.03 250)" }}>
-              Enterprise AI Solutions
-            </h2>
-            <p className="font-body text-xl max-w-2xl mx-auto" style={{ color: "oklch(0.35 0.02 250)" }}>
-              From strategy to implementation, I help organizations harness AI responsibly and effectively.
+            <p className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: "oklch(0.72 0.14 85)" }}>
+              Client Results
             </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-              >
-                <Link href={service.href}>
-                  <motion.div
-                    whileHover={{ y: -12, scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="group h-full p-8 bg-white cursor-pointer transition-all duration-300 relative overflow-hidden"
-                    style={{ border: "1px solid oklch(0.90 0.01 90)" }}
-                  >
-                    {/* Animated gradient background on hover */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-                    
-                    <div className="relative z-10">
-                      <motion.div
-                        whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.5 }}
-                        className="w-14 h-14 flex items-center justify-center mb-6"
-                        style={{ backgroundColor: "oklch(0.72 0.14 85 / 0.1)" }}
-                      >
-                        <service.icon size={28} style={{ color: "oklch(0.72 0.14 85)" }} />
-                      </motion.div>
-                      
-                      <h3 className="font-display text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: "oklch(0.15 0.03 250)" }}>
-                        {service.title}
-                        <ArrowUpRight 
-                          size={20} 
-                          className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1 group-hover:-translate-y-1" 
-                          style={{ color: "oklch(0.72 0.14 85)" }}
-                        />
-                      </h3>
-                      
-                      <p className="font-body text-base leading-relaxed" style={{ color: "oklch(0.45 0.02 250)" }}>
-                        {service.description}
-                      </p>
-                      
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileHover={{ width: "100%" }}
-                        className="h-0.5 mt-6"
-                        style={{ backgroundColor: "oklch(0.72 0.14 85)" }}
-                      />
-                    </div>
-                  </motion.div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* View all services CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <Link href="/consulting">
-              <motion.span
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 font-semibold text-lg cursor-pointer"
-                style={{ color: "oklch(0.72 0.14 85)" }}
-              >
-                View All Services
-                <ArrowRight size={20} />
-              </motion.span>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Testimonials Section - Interactive Carousel */}
-      <section className="py-24" style={{ backgroundColor: "oklch(0.15 0.03 250)" }}>
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <p className="section-label mb-4">Client Success</p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold" style={{ color: "oklch(0.97 0.01 90)" }}>
+            <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>
               Trusted by Industry Leaders
             </h2>
           </motion.div>
 
-          <div className="max-w-4xl mx-auto">
-            {/* Main testimonial */}
+          <div className="max-w-3xl mx-auto">
             <motion.div
               key={activeTestimonial}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center mb-12"
+              className="text-center mb-8"
             >
-              <Sparkles className="mx-auto mb-6" size={40} style={{ color: "oklch(0.72 0.14 85)" }} />
-              <p className="font-display text-2xl md:text-3xl leading-relaxed mb-8" style={{ color: "oklch(0.97 0.01 90)" }}>
+              <p className="text-xl md:text-2xl leading-relaxed mb-6" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>
                 "{testimonials[activeTestimonial].quote}"
               </p>
-              <p className="font-display text-xl font-bold" style={{ color: "oklch(0.97 0.01 90)" }}>
+              <p className="font-bold" style={{ color: "oklch(0.15 0.03 250)" }}>
                 {testimonials[activeTestimonial].author}
               </p>
-              <p className="font-body text-base" style={{ color: "oklch(0.72 0.14 85)" }}>
+              <p className="text-sm" style={{ color: "oklch(0.72 0.14 85)" }}>
                 {testimonials[activeTestimonial].role}
               </p>
             </motion.div>
 
-            {/* Navigation dots */}
-            <div className="flex justify-center gap-3">
+            <div className="flex justify-center gap-2">
               {testimonials.map((_, index) => (
-                <motion.button
+                <button
                   key={index}
                   onClick={() => setActiveTestimonial(index)}
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer"
+                  className="w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer"
                   style={{ 
                     backgroundColor: index === activeTestimonial 
                       ? "oklch(0.72 0.14 85)" 
-                      : "oklch(0.97 0.01 90 / 0.3)"
+                      : "oklch(0.15 0.03 250 / 0.2)"
                   }}
                 />
               ))}
@@ -523,120 +511,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Tudor Foundation Section */}
-      <section className="py-24">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="relative overflow-hidden cursor-pointer"
-              >
-                <img
-                  src="/images/consulting-office.png"
-                  alt="Tudor Foundation - Preserving Heritage"
-                  className="w-full h-auto shadow-2xl"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-8">
-                  <Link href="/foundation">
-                    <span className="text-white font-semibold flex items-center gap-2">
-                      Learn More <ArrowRight size={18} />
-                    </span>
-                  </Link>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <p className="section-label mb-4">Philanthropy</p>
-              <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" style={{ color: "oklch(0.15 0.03 250)" }}>
-                The Tudor Foundation
-              </h2>
-              <p className="font-body text-lg leading-relaxed mb-6" style={{ color: "oklch(0.35 0.02 250)" }}>
-                Founded on the belief that heritage should serve humanity, the Tudor 
-                Foundation is dedicated to preserving and promoting England's rich Tudor 
-                heritage and historical legacy.
-              </p>
-              <p className="font-body text-lg leading-relaxed mb-8" style={{ color: "oklch(0.35 0.02 250)" }}>
-                Through conservation of Tudor architectural landmarks, support of academic 
-                research, and educational outreach, we're building bridges between the past 
-                and future.
-              </p>
-              <Link href="/foundation">
-                <motion.span
-                  whileHover={{ scale: 1.03, x: 5 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="inline-flex items-center gap-3 px-8 py-4 font-semibold text-lg cursor-pointer"
-                  style={{ 
-                    backgroundColor: "oklch(0.15 0.03 250)",
-                    color: "oklch(0.97 0.01 90)"
-                  }}
-                >
-                  Explore Our Mission
-                  <ArrowRight size={20} />
-                </motion.span>
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Email Capture CTA */}
+      {/* Email Capture */}
       <section className="py-24" style={{ backgroundColor: "oklch(0.72 0.14 85)" }}>
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" style={{ color: "oklch(0.15 0.03 250)" }}>
-                Get Weekly AI Strategy Insights
-              </h2>
-              <p className="font-body text-xl leading-relaxed mb-8" style={{ color: "oklch(0.15 0.03 250 / 0.8)" }}>
-                Join 8,000+ leaders receiving exclusive insights on implementing 
-                ethical, impactful AI strategies.
-              </p>
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="flex-1 px-6 py-4 font-body text-base focus:outline-none focus:ring-2 transition-all duration-300"
-                  style={{ 
-                    backgroundColor: "oklch(1 0 0)",
-                    border: "none",
-                    color: "oklch(0.15 0.03 250)"
-                  }}
-                  required
-                />
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  className="px-8 py-4 font-semibold text-base tracking-wide uppercase transition-all duration-300 cursor-pointer"
-                  style={{ 
-                    backgroundColor: "oklch(0.15 0.03 250)",
-                    color: "oklch(0.97 0.01 90)"
-                  }}
-                >
-                  Subscribe
-                  <ArrowRight size={16} className="inline ml-2" />
-                </motion.button>
-              </form>
-              <p className="font-body text-sm mt-4" style={{ color: "oklch(0.15 0.03 250 / 0.6)" }}>
-                No spam. Unsubscribe anytime.
-              </p>
-            </motion.div>
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.15 0.03 250)" }}>
+              Weekly AI Strategy Insights
+            </h2>
+            <p className="text-lg mb-8" style={{ color: "oklch(0.15 0.03 250 / 0.8)" }}>
+              Join 8,000+ executives and researchers receiving actionable AI insights every week.
+            </p>
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 text-base focus:outline-none"
+                style={{ backgroundColor: "white", color: "oklch(0.15 0.03 250)" }}
+                required
+              />
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="px-6 py-3 font-semibold cursor-pointer"
+                style={{ backgroundColor: "oklch(0.15 0.03 250)", color: "oklch(0.97 0.01 90)" }}
+              >
+                Subscribe
+              </motion.button>
+            </form>
+            <p className="text-sm mt-4" style={{ color: "oklch(0.15 0.03 250 / 0.6)" }}>
+              No spam. Unsubscribe anytime.
+            </p>
           </div>
         </div>
       </section>
@@ -644,50 +551,36 @@ export default function Home() {
       {/* Final CTA */}
       <section className="py-24" style={{ backgroundColor: "oklch(0.15 0.03 250)" }}>
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" style={{ color: "oklch(0.97 0.01 90)" }}>
-                Ready to Transform Your AI Strategy?
-              </h2>
-              <p className="font-body text-xl leading-relaxed mb-8" style={{ color: "oklch(0.97 0.01 90 / 0.7)" }}>
-                Let's discuss how I can help your organization implement AI 
-                responsibly and effectively.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link href="/consulting">
-                  <motion.span
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="inline-flex items-center gap-3 px-8 py-4 font-semibold text-lg cursor-pointer"
-                    style={{ 
-                      backgroundColor: "oklch(0.72 0.14 85)",
-                      color: "oklch(0.15 0.03 250)"
-                    }}
-                  >
-                    Schedule a Consultation
-                    <ArrowRight size={20} />
-                  </motion.span>
-                </Link>
-                <Link href="/contact">
-                  <motion.span
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="inline-flex items-center gap-3 px-8 py-4 font-semibold text-lg border-2 cursor-pointer"
-                    style={{ 
-                      borderColor: "oklch(0.97 0.01 90)",
-                      color: "oklch(0.97 0.01 90)",
-                      backgroundColor: "transparent"
-                    }}
-                  >
-                    Get in Touch
-                  </motion.span>
-                </Link>
-              </div>
-            </motion.div>
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif", color: "oklch(0.97 0.01 90)" }}>
+              Ready to Transform Your AI Strategy?
+            </h2>
+            <p className="text-lg mb-8" style={{ color: "oklch(0.97 0.01 90 / 0.7)" }}>
+              Let's discuss how research-backed AI consulting can accelerate your organization's success.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/consulting">
+                <motion.span
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 font-semibold cursor-pointer"
+                  style={{ backgroundColor: "oklch(0.72 0.14 85)", color: "oklch(0.15 0.03 250)" }}
+                >
+                  Schedule a Consultation
+                  <ArrowRight size={18} />
+                </motion.span>
+              </Link>
+              <Link href="/contact">
+                <motion.span
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 font-semibold border-2 cursor-pointer"
+                  style={{ borderColor: "oklch(0.97 0.01 90)", color: "oklch(0.97 0.01 90)", backgroundColor: "transparent" }}
+                >
+                  Get in Touch
+                </motion.span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

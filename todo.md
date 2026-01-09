@@ -8,3 +8,8 @@
 - [x] Redesign hero section for better image-copy integration
 - [x] Add interactive elements and smooth animations
 - [x] Enhance navigation with intuitive click-throughs
+- [x] Fix formatting issues and improve visual flow
+- [x] Refine positioning as AI researcher turned high-demand consultant
+- [x] Create dynamic AI News page with auto-updating content
+- [x] Implement backend API for fetching latest AI news
+- [x] Add working clickable links to news articles for SEO

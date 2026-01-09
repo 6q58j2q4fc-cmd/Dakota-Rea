@@ -12,6 +12,7 @@ import Books from "./pages/Books";
 import Foundation from "./pages/Foundation";
 import Contact from "./pages/Contact";
 import Press from "./pages/Press";
+import AINews from "./pages/AINews";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/foundation" component={Foundation} />
       <Route path="/contact" component={Contact} />
       <Route path="/press" component={Press} />
+      <Route path="/ai-news" component={AINews} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
