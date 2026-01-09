@@ -5,31 +5,52 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
-
+import About from "./pages/About";
+import Speaking from "./pages/Speaking";
+import Consulting from "./pages/Consulting";
+import Books from "./pages/Books";
+import Foundation from "./pages/Foundation";
+import Contact from "./pages/Contact";
+import Press from "./pages/Press";
 
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
+      <Route path="/" component={Home} />
+      <Route path="/about" component={About} />
+      <Route path="/speaking" component={Speaking} />
+      <Route path="/consulting" component={Consulting} />
+      <Route path="/books" component={Books} />
+      <Route path="/foundation" component={Foundation} />
+      <Route path="/contact" component={Contact} />
+      <Route path="/press" component={Press} />
+      <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
+/*
+  DESIGN PHILOSOPHY: Timeless Editorial Luxury
+  Inspired by Kinfolk, Cereal Magazine - curated minimalism with photographic storytelling
+  
+  Colors:
+  - Primary: Warm Charcoal (#2D2926) - sophisticated, timeless
+  - Secondary: Cream (#FAF7F2) - warmth, editorial elegance
+  - Accent: Terracotta (#C4785A) - worldly, warm
+  - Highlight: Sage (#8B9D83) - growth, philanthropy
+  
+  Typography:
+  - Display: Libre Baskerville - editorial elegance
+  - Body: Lora - readable warm serif
+  - Accent: Montserrat - modern sans-serif for navigation
+*/
 
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
           <Router />
