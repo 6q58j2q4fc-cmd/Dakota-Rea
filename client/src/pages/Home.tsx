@@ -14,10 +14,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 const stats = [
-  { number: "60+", label: "Countries Visited", icon: Globe },
-  { number: "1000s", label: "Audience Members", icon: Users },
-  { number: "5", label: "Published Works", icon: BookOpen },
-  { number: "200+", label: "Speaking Events", icon: Mic },
+  { number: "50+", label: "Enterprise Clients", icon: Building },
+  { number: "$2B+", label: "AI Value Delivered", icon: Award },
+  { number: "60+", label: "Countries Served", icon: Globe },
+  { number: "200+", label: "AI Implementations", icon: CheckCircle },
 ];
 
 const credentials = [
@@ -45,19 +45,19 @@ const credentials = [
 
 const services = [
   {
-    title: "Keynote Speaking",
-    description: "Transformative talks on AI ethics, innovation, and leadership for audiences worldwide.",
-    href: "/speaking",
-  },
-  {
-    title: "Strategic Consulting",
-    description: "Full-stack consulting for brands seeking millennial insights and ethical growth strategies.",
+    title: "AI Strategy Consulting",
+    description: "Enterprise AI strategy development, GenAI implementation roadmaps, and digital transformation advisory for Fortune 500 companies.",
     href: "/consulting",
   },
   {
-    title: "Published Author",
-    description: "Books exploring the intersection of philosophy, technology, and human flourishing.",
-    href: "/books",
+    title: "AI Ethics & Governance",
+    description: "Responsible AI frameworks, bias auditing, and ethical AI governance consulting to ensure compliant and trustworthy AI systems.",
+    href: "/consulting",
+  },
+  {
+    title: "AI Product Development",
+    description: "End-to-end AI product strategy, from ideation to deployment. LLM integration, agentic AI systems, and custom AI solutions.",
+    href: "/consulting",
   },
 ];
 
@@ -105,20 +105,20 @@ export default function Home() {
               className="order-2 lg:order-1"
             >
               <div className="flex flex-wrap gap-3 mb-6">
-                <span className="credential-badge">Harvard Alumni</span>
-                <span className="credential-badge">Oxford Scholar</span>
+                <span className="credential-badge">AI Strategy Consultant</span>
+                <span className="credential-badge">GenAI Implementation</span>
                 <span className="credential-badge">AI Ethics Expert</span>
               </div>
               
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] mb-6" style={{ color: "oklch(0.15 0.03 250)" }}>
-                Shaping the Future of{" "}
-                <span className="gradient-text">Ethical Innovation</span>
+                AI Strategy Consulting &{" "}
+                <span className="gradient-text">Ethical AI Implementation</span>
               </h1>
               
               <p className="font-body text-lg md:text-xl leading-relaxed mb-8 max-w-xl" style={{ color: "oklch(0.35 0.02 250)" }}>
-                Entrepreneur, inventor, and philanthropist. Harvard and Oxford educated, 
-                dedicated to advancing AI ethics and creating positive global impact 
-                through research, speaking, and the Tudor Foundation.
+                Harvard and Oxford educated AI strategist helping enterprises navigate 
+                digital transformation with responsible AI. Expert in GenAI implementation, 
+                AI governance, and building ethical AI products that drive business value.
               </p>
               
               <div className="flex flex-wrap gap-4 mb-8">
@@ -194,7 +194,7 @@ export default function Home() {
                     Slaughter and May
                   </p>
                   <p className="font-body text-sm" style={{ color: "oklch(0.97 0.01 90 / 0.7)" }}>
-                    UK Solicitor
+                    UK Solicitor Trainee
                   </p>
                 </motion.div>
               </div>
@@ -275,14 +275,14 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <p className="section-label mb-4">How I Can Help</p>
+              <p className="section-label mb-4">AI Consulting Services</p>
               <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6" style={{ color: "oklch(0.15 0.03 250)" }}>
-                Transform Your Vision Into Reality
+                Enterprise AI Solutions That Deliver Results
               </h2>
               <p className="font-body text-lg leading-relaxed mb-8" style={{ color: "oklch(0.35 0.02 250)" }}>
-                With experience spanning 60+ countries and audiences of thousands, 
-                I bring a unique global perspective to every engagement. Whether you need 
-                a keynote speaker, strategic consultant, or thought partner, I'm here to help.
+                From AI strategy development to GenAI implementation and responsible AI governance, 
+                I help enterprises unlock the full potential of artificial intelligence while 
+                ensuring ethical, compliant, and sustainable AI adoption.
               </p>
               
               <div className="space-y-4">
