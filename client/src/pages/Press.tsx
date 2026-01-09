@@ -121,7 +121,7 @@ export default function Press() {
             >
               <div className="aspect-[3/4] overflow-hidden sticky top-32">
                 <img
-                  src="/images/hero-portrait.png"
+                  src="/images/dakota-rea-portrait.jpg"
                   alt="Dakota Rea official portrait"
                   className="w-full h-full object-cover"
                 />

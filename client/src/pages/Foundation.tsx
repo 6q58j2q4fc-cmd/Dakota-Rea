@@ -1,11 +1,12 @@
 /*
-  DESIGN: Timeless Editorial Luxury
-  Tudor Foundation Page: Philanthropy and mission-focused content
+  DESIGN: Bold Authority + Modern Sophistication
+  Foundation Page: Tudor Foundation with mission and initiatives
 */
 
 import { useState } from "react";
+import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Globe, GraduationCap, Heart, Lightbulb, Users } from "lucide-react";
+import { ArrowRight, Heart, Building, BookOpen, Users, Globe, Award, GraduationCap, Lightbulb } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -14,48 +15,48 @@ import { Input } from "@/components/ui/input";
 
 const pillars = [
   {
-    icon: GraduationCap,
-    title: "Education Access",
-    description: "Expanding educational opportunities for underserved communities worldwide through scholarships, learning resources, and mentorship programs.",
-    impact: "10,000+ students supported",
+    icon: Building,
+    title: "Heritage Preservation",
+    description: "Conserving and restoring Tudor architectural landmarks across England, ensuring these treasures endure for future generations.",
+    stats: "12 Sites Protected",
   },
   {
-    icon: Lightbulb,
-    title: "Ethical Technology",
-    description: "Funding research and initiatives that ensure technology development serves humanity's best interests and promotes responsible innovation.",
-    impact: "25+ research grants awarded",
+    icon: BookOpen,
+    title: "Academic Research",
+    description: "Funding scholarly research into Tudor history, supporting historians, archaeologists, and researchers worldwide.",
+    stats: "50+ Grants Awarded",
   },
   {
     icon: Users,
-    title: "Community Empowerment",
-    description: "Supporting grassroots organizations that build sustainable, resilient communities through local leadership and collaborative action.",
-    impact: "50+ communities reached",
+    title: "Public Education",
+    description: "Making Tudor history accessible through educational programs, exhibitions, and digital resources.",
+    stats: "100K+ People Reached",
   },
 ];
 
 const initiatives = [
   {
-    title: "Global Scholars Program",
-    description: "Full scholarships for exceptional students from developing nations to attend world-class universities.",
-    image: "/images/shc5ykBMbLUc.png",
+    title: "Tudor Heritage Trail",
+    description: "A nationwide initiative connecting Tudor sites across England with interactive experiences and educational content.",
+    image: "/images/global-travel.png",
   },
   {
-    title: "AI Ethics Research Fund",
-    description: "Grants supporting academic research on responsible AI development and governance frameworks.",
-    image: "/images/kyARmzu3bAlx.png",
+    title: "Young Historians Program",
+    description: "Inspiring the next generation of historians through school partnerships, internships, and scholarship opportunities.",
+    image: "/images/speaking-stage.png",
   },
   {
-    title: "Community Leaders Initiative",
-    description: "Training and resources for local leaders driving positive change in their communities.",
-    image: "/images/hero-philanthropy.png",
+    title: "Digital Archive Project",
+    description: "Creating a comprehensive digital archive of Tudor documents, artifacts, and research for global access.",
+    image: "/images/consulting-office.png",
   },
 ];
 
 const stats = [
-  { number: "$5M+", label: "Grants Awarded" },
-  { number: "30+", label: "Countries Reached" },
-  { number: "100+", label: "Partner Organizations" },
-  { number: "50,000+", label: "Lives Impacted" },
+  { number: "£2M+", label: "Funds Raised" },
+  { number: "12", label: "Sites Protected" },
+  { number: "50+", label: "Research Grants" },
+  { number: "100K+", label: "People Reached" },
 ];
 
 export default function Foundation() {
@@ -68,18 +69,18 @@ export default function Foundation() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "oklch(0.97 0.01 90)" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "oklch(0.99 0.005 90)" }}>
       <Navigation />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden">
+      <section className="relative pt-32 pb-24 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/images/hero-philanthropy.png"
-            alt="Tudor Foundation community work"
+            src="/images/global-travel.png"
+            alt="Tudor architecture and heritage"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0" style={{ backgroundColor: "oklch(0.65 0.05 145 / 0.85)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, oklch(0.15 0.03 250 / 0.9) 0%, oklch(0.15 0.03 250 / 0.7) 100%)" }} />
         </div>
         <div className="container relative z-10">
           <div className="max-w-3xl">
@@ -88,24 +89,68 @@ export default function Foundation() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="font-sans text-sm font-medium tracking-widest uppercase mb-4" style={{ color: "oklch(0.99 0.005 90)" }}>
+              <p className="section-label mb-4" style={{ color: "oklch(0.72 0.14 85)" }}>
                 The Tudor Foundation
               </p>
-              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6" style={{ color: "oklch(0.99 0.005 90)" }}>
-                Knowledge in Service of Humanity
+              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6" style={{ color: "oklch(0.97 0.01 90)" }}>
+                Preserving England's{" "}
+                <span style={{ color: "oklch(0.72 0.14 85)" }}>Tudor Heritage</span>
               </h1>
-              <p className="font-body text-xl leading-relaxed" style={{ color: "oklch(0.99 0.005 90 / 0.9)" }}>
-                Founded by Dakota Rea, the Tudor Foundation advances education, 
-                ethical technology, and community empowerment to create lasting 
-                positive change around the world.
+              <p className="font-body text-xl leading-relaxed mb-8" style={{ color: "oklch(0.97 0.01 90 / 0.85)" }}>
+                Founded by Dakota Rea, the Tudor Foundation is dedicated to preserving, 
+                researching, and sharing England's rich Tudor history for future generations.
               </p>
+              <div className="flex flex-wrap gap-4">
+                <a href="#support">
+                  <motion.span
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="btn-primary"
+                  >
+                    Support Our Mission
+                    <Heart size={16} />
+                  </motion.span>
+                </a>
+                <a href="#initiatives">
+                  <motion.span
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="btn-white"
+                  >
+                    View Initiatives
+                  </motion.span>
+                </a>
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="py-16" style={{ backgroundColor: "oklch(0.15 0.03 250)" }}>
+        <div className="container">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="text-center"
+              >
+                <p className="stat-number mb-2">{stat.number}</p>
+                <p className="font-heading text-sm tracking-wide uppercase" style={{ color: "oklch(0.97 0.01 90 / 0.7)" }}>
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Mission Section */}
-      <section className="py-24 md:py-32">
+      <section className="py-24">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -113,26 +158,32 @@ export default function Foundation() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <p className="font-sans text-sm font-medium tracking-widest uppercase mb-4" style={{ color: "oklch(0.62 0.12 45)" }}>
-                Our Mission
-              </p>
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-6" style={{ color: "oklch(0.25 0.01 50)" }}>
-                Building a More Equitable Future
+              <p className="section-label mb-4">Our Mission</p>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-6" style={{ color: "oklch(0.15 0.03 250)" }}>
+                Why Tudor History Matters
               </h2>
-              <p className="font-body text-lg leading-relaxed mb-6" style={{ color: "oklch(0.35 0.01 50)" }}>
-                The Tudor Foundation was established on a simple premise: that knowledge, 
-                when shared freely and applied thoughtfully, has the power to transform 
-                lives and communities.
+              <p className="font-body text-lg leading-relaxed mb-6" style={{ color: "oklch(0.45 0.02 250)" }}>
+                The Tudor period (1485-1603) represents one of the most transformative eras 
+                in English history. From the religious reformation to the flourishing of arts 
+                and exploration, the Tudor legacy continues to shape our world today.
               </p>
-              <p className="font-body text-lg leading-relaxed mb-6" style={{ color: "oklch(0.35 0.01 50)" }}>
-                We believe that access to education should not be determined by geography 
-                or circumstance, that technology should serve humanity's highest aspirations, 
-                and that lasting change comes from empowering local leaders to solve local challenges.
+              <p className="font-body text-lg leading-relaxed mb-6" style={{ color: "oklch(0.45 0.02 250)" }}>
+                The Tudor Foundation was established to ensure this remarkable heritage is 
+                preserved, studied, and shared. Through our work in conservation, research, 
+                and education, we're building bridges between past and present.
               </p>
-              <p className="font-body text-lg leading-relaxed" style={{ color: "oklch(0.35 0.01 50)" }}>
-                Through strategic partnerships and carefully designed programs, we work to 
-                make these beliefs a reality—one community, one student, one breakthrough at a time.
-              </p>
+              <blockquote 
+                className="pl-6 py-4 italic"
+                style={{ borderLeft: "4px solid oklch(0.72 0.14 85)" }}
+              >
+                <p className="font-body text-lg mb-2" style={{ color: "oklch(0.35 0.02 250)" }}>
+                  "Understanding our history is essential to navigating our future. The Tudor 
+                  period offers timeless lessons in leadership, innovation, and resilience."
+                </p>
+                <cite className="font-heading text-sm not-italic" style={{ color: "oklch(0.72 0.14 85)" }}>
+                  — Dakota Rea, Founder
+                </cite>
+              </blockquote>
             </motion.div>
 
             <motion.div
@@ -140,28 +191,18 @@ export default function Foundation() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <blockquote className="p-8" style={{ backgroundColor: "oklch(0.94 0.01 90)" }}>
-                <p className="font-display text-xl md:text-2xl font-bold italic leading-relaxed mb-6" style={{ color: "oklch(0.25 0.01 50)" }}>
-                  "True philanthropy is not about giving—it's about enabling. 
-                  Our role is to provide the tools, resources, and opportunities 
-                  that allow people to build their own futures."
-                </p>
-                <footer>
-                  <p className="font-display text-base font-bold" style={{ color: "oklch(0.25 0.01 50)" }}>
-                    Dakota Rea
-                  </p>
-                  <p className="font-sans text-sm" style={{ color: "oklch(0.55 0.01 50)" }}>
-                    Founder, Tudor Foundation
-                  </p>
-                </footer>
-              </blockquote>
+              <img
+                src="/images/consulting-office.png"
+                alt="Tudor heritage preservation"
+                className="w-full h-auto shadow-2xl"
+              />
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Pillars Section */}
-      <section className="py-24 md:py-32" style={{ backgroundColor: "oklch(0.25 0.01 50)" }}>
+      {/* Three Pillars */}
+      <section className="py-24" style={{ backgroundColor: "oklch(0.97 0.01 90)" }}>
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -169,10 +210,8 @@ export default function Foundation() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <p className="font-sans text-sm font-medium tracking-widest uppercase mb-4" style={{ color: "oklch(0.62 0.12 45)" }}>
-              Our Focus
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: "oklch(0.97 0.01 90)" }}>
+            <p className="section-label mb-4">Our Focus</p>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: "oklch(0.15 0.03 250)" }}>
               Three Pillars of Impact
             </h2>
           </motion.div>
@@ -185,18 +224,23 @@ export default function Foundation() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-8 text-center"
-                style={{ backgroundColor: "oklch(0.97 0.01 90)" }}
+                className="p-8 bg-white card-hover text-center"
+                style={{ border: "1px solid oklch(0.90 0.01 90)" }}
               >
-                <pillar.icon className="mx-auto mb-6" size={48} style={{ color: "oklch(0.65 0.05 145)" }} />
-                <h3 className="font-display text-xl font-bold mb-3" style={{ color: "oklch(0.25 0.01 50)" }}>
+                <div 
+                  className="w-16 h-16 mx-auto mb-6 flex items-center justify-center"
+                  style={{ backgroundColor: "oklch(0.72 0.14 85 / 0.1)" }}
+                >
+                  <pillar.icon size={32} style={{ color: "oklch(0.72 0.14 85)" }} />
+                </div>
+                <h3 className="font-display text-xl font-bold mb-3" style={{ color: "oklch(0.15 0.03 250)" }}>
                   {pillar.title}
                 </h3>
-                <p className="font-body text-base leading-relaxed mb-6" style={{ color: "oklch(0.45 0.01 50)" }}>
+                <p className="font-body text-base mb-4" style={{ color: "oklch(0.45 0.02 250)" }}>
                   {pillar.description}
                 </p>
-                <p className="font-sans text-sm font-semibold tracking-wide uppercase" style={{ color: "oklch(0.62 0.12 45)" }}>
-                  {pillar.impact}
+                <p className="font-heading text-sm font-semibold" style={{ color: "oklch(0.72 0.14 85)" }}>
+                  {pillar.stats}
                 </p>
               </motion.div>
             ))}
@@ -204,33 +248,8 @@ export default function Foundation() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16" style={{ backgroundColor: "oklch(0.65 0.05 145)" }}>
-        <div className="container">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="text-center"
-              >
-                <p className="font-display text-3xl md:text-4xl font-bold mb-1" style={{ color: "oklch(0.99 0.005 90)" }}>
-                  {stat.number}
-                </p>
-                <p className="font-sans text-xs tracking-wide uppercase" style={{ color: "oklch(0.99 0.005 90 / 0.8)" }}>
-                  {stat.label}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Initiatives Section */}
-      <section className="py-24 md:py-32">
+      {/* Initiatives */}
+      <section id="initiatives" className="py-24">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -238,10 +257,8 @@ export default function Foundation() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <p className="font-sans text-sm font-medium tracking-widest uppercase mb-4" style={{ color: "oklch(0.62 0.12 45)" }}>
-              Our Work
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: "oklch(0.25 0.01 50)" }}>
+            <p className="section-label mb-4">Current Work</p>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: "oklch(0.15 0.03 250)" }}>
               Featured Initiatives
             </h2>
           </motion.div>
@@ -256,17 +273,17 @@ export default function Foundation() {
                 transition={{ delay: index * 0.1 }}
                 className="group"
               >
-                <div className="aspect-[4/3] overflow-hidden mb-6">
+                <div className="aspect-[4/3] overflow-hidden mb-6 shadow-lg">
                   <img
                     src={initiative.image}
                     alt={initiative.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
-                <h3 className="font-display text-xl font-bold mb-3" style={{ color: "oklch(0.25 0.01 50)" }}>
+                <h3 className="font-display text-xl font-bold mb-3" style={{ color: "oklch(0.15 0.03 250)" }}>
                   {initiative.title}
                 </h3>
-                <p className="font-body text-base leading-relaxed" style={{ color: "oklch(0.45 0.01 50)" }}>
+                <p className="font-body text-base" style={{ color: "oklch(0.45 0.02 250)" }}>
                   {initiative.description}
                 </p>
               </motion.div>
@@ -275,100 +292,128 @@ export default function Foundation() {
         </div>
       </section>
 
-      {/* Get Involved Section */}
-      <section className="py-24 md:py-32" style={{ backgroundColor: "oklch(0.94 0.01 90)" }}>
+      {/* Support CTA */}
+      <section id="support" className="py-24" style={{ backgroundColor: "oklch(0.72 0.14 85)" }}>
         <div className="container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="max-w-3xl mx-auto text-center">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <p className="font-sans text-sm font-medium tracking-widest uppercase mb-4" style={{ color: "oklch(0.62 0.12 45)" }}>
-                Get Involved
-              </p>
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-6" style={{ color: "oklch(0.25 0.01 50)" }}>
-                Join Our Mission
+              <Heart size={48} className="mx-auto mb-6" style={{ color: "oklch(0.15 0.03 250)" }} />
+              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6" style={{ color: "oklch(0.15 0.03 250)" }}>
+                Support Our Mission
               </h2>
-              <p className="font-body text-lg leading-relaxed mb-8" style={{ color: "oklch(0.35 0.01 50)" }}>
-                There are many ways to support the Tudor Foundation's work. Whether 
-                through financial contributions, volunteer expertise, or partnership 
-                opportunities, your involvement helps us extend our reach and deepen our impact.
+              <p className="font-body text-lg mb-8" style={{ color: "oklch(0.15 0.03 250 / 0.8)" }}>
+                Your contribution helps preserve Tudor heritage, fund vital research, 
+                and educate future generations. Every donation makes a difference.
               </p>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 p-4" style={{ backgroundColor: "oklch(0.99 0.005 90)" }}>
-                  <Heart className="flex-shrink-0 mt-1" size={24} style={{ color: "oklch(0.62 0.12 45)" }} />
-                  <div>
-                    <h4 className="font-display text-lg font-bold mb-1" style={{ color: "oklch(0.25 0.01 50)" }}>
-                      Make a Donation
-                    </h4>
-                    <p className="font-body text-sm" style={{ color: "oklch(0.45 0.01 50)" }}>
-                      100% of donations go directly to program funding.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4 p-4" style={{ backgroundColor: "oklch(0.99 0.005 90)" }}>
-                  <Globe className="flex-shrink-0 mt-1" size={24} style={{ color: "oklch(0.62 0.12 45)" }} />
-                  <div>
-                    <h4 className="font-display text-lg font-bold mb-1" style={{ color: "oklch(0.25 0.01 50)" }}>
-                      Partner With Us
-                    </h4>
-                    <p className="font-body text-sm" style={{ color: "oklch(0.45 0.01 50)" }}>
-                      Organizations can amplify impact through strategic partnerships.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4 p-4" style={{ backgroundColor: "oklch(0.99 0.005 90)" }}>
-                  <BookOpen className="flex-shrink-0 mt-1" size={24} style={{ color: "oklch(0.62 0.12 45)" }} />
-                  <div>
-                    <h4 className="font-display text-lg font-bold mb-1" style={{ color: "oklch(0.25 0.01 50)" }}>
-                      Share Expertise
-                    </h4>
-                    <p className="font-body text-sm" style={{ color: "oklch(0.45 0.01 50)" }}>
-                      Volunteer your skills to support our programs and scholars.
-                    </p>
-                  </div>
-                </div>
+              <div className="flex flex-wrap justify-center gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center gap-2 px-8 py-4 font-heading text-sm font-semibold tracking-wider uppercase transition-all"
+                  style={{ backgroundColor: "oklch(0.15 0.03 250)", color: "oklch(0.97 0.01 90)" }}
+                >
+                  Make a Donation
+                  <ArrowRight size={16} />
+                </motion.button>
+                <Link href="/contact">
+                  <motion.span
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex items-center gap-2 px-8 py-4 font-heading text-sm font-semibold tracking-wider uppercase transition-all"
+                    style={{ backgroundColor: "transparent", color: "oklch(0.15 0.03 250)", border: "2px solid oklch(0.15 0.03 250)" }}
+                  >
+                    Partner With Us
+                  </motion.span>
+                </Link>
               </div>
             </motion.div>
+          </div>
+        </div>
+      </section>
 
+      {/* Newsletter */}
+      <section className="py-24">
+        <div className="container">
+          <div className="max-w-2xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="p-8"
-              style={{ backgroundColor: "oklch(0.99 0.005 90)" }}
+              className="p-8 md:p-12 text-center"
+              style={{ backgroundColor: "oklch(0.97 0.01 90)" }}
             >
-              <h3 className="font-display text-xl font-bold mb-4" style={{ color: "oklch(0.25 0.01 50)" }}>
+              <h3 className="font-display text-2xl font-bold mb-4" style={{ color: "oklch(0.15 0.03 250)" }}>
                 Stay Connected
               </h3>
-              <p className="font-body text-base mb-6" style={{ color: "oklch(0.45 0.01 50)" }}>
+              <p className="font-body text-base mb-6" style={{ color: "oklch(0.45 0.02 250)" }}>
                 Subscribe to receive updates on our initiatives, impact stories, 
                 and opportunities to get involved.
               </p>
-              <form onSubmit={handleSubscribe} className="space-y-4">
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                 <Input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="font-body"
+                  className="flex-1"
                 />
-                <Button
-                  type="submit"
-                  className="w-full font-sans text-sm font-semibold tracking-wide uppercase"
-                  style={{ backgroundColor: "oklch(0.65 0.05 145)", color: "oklch(0.99 0.005 90)" }}
-                >
-                  Subscribe to Updates
-                  <ArrowRight size={16} className="ml-2" />
+                <Button type="submit" className="btn-primary">
+                  Subscribe
+                  <ArrowRight size={16} />
                 </Button>
               </form>
-              <p className="font-sans text-xs mt-4" style={{ color: "oklch(0.55 0.01 50)" }}>
-                For partnership or donation inquiries, please contact us at{" "}
-                <a href="mailto:foundation@dakotarea.com" className="underline">
-                  foundation@dakotarea.com
-                </a>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Board Section */}
+      <section className="py-24" style={{ backgroundColor: "oklch(0.97 0.01 90)" }}>
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <p className="section-label mb-4">Leadership</p>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4" style={{ color: "oklch(0.15 0.03 250)" }}>
+              Foundation Board
+            </h2>
+            <p className="font-body text-lg max-w-2xl mx-auto" style={{ color: "oklch(0.45 0.02 250)" }}>
+              The Tudor Foundation is guided by a dedicated board of historians, 
+              preservationists, and philanthropists committed to our mission.
+            </p>
+          </motion.div>
+
+          <div className="max-w-md mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="p-8 bg-white text-center"
+              style={{ border: "1px solid oklch(0.90 0.01 90)" }}
+            >
+              <img
+                src="/images/dakota-rea-portrait.jpg"
+                alt="Dakota Rea - Founder"
+                className="w-32 h-32 mx-auto mb-6 object-cover shadow-lg"
+              />
+              <h3 className="font-display text-2xl font-bold mb-2" style={{ color: "oklch(0.15 0.03 250)" }}>
+                Dakota Rea
+              </h3>
+              <p className="font-heading text-sm mb-4" style={{ color: "oklch(0.72 0.14 85)" }}>
+                Founder & Chairman
+              </p>
+              <p className="font-body text-base" style={{ color: "oklch(0.45 0.02 250)" }}>
+                Dakota founded the Tudor Foundation to combine his passion for history 
+                with his commitment to education and preservation. His vision guides 
+                all of the foundation's initiatives.
               </p>
             </motion.div>
           </div>
