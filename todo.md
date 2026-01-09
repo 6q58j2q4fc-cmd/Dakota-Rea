@@ -13,3 +13,9 @@
 - [x] Create dynamic AI News page with auto-updating content
 - [x] Implement backend API for fetching latest AI news
 - [x] Add working clickable links to news articles for SEO
+- [x] Set up Stripe integration for payment processing
+- [x] Create database schema for products, cart items, and orders
+- [x] Build backend API routes for cart operations (add, remove, update, checkout)
+- [x] Create cart UI components (cart drawer, cart page, checkout)
+- [x] Update Books page with add-to-cart buttons
+- [x] Test complete shopping cart and checkout flow

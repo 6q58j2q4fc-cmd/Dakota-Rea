@@ -1,13 +1,16 @@
 /*
   DESIGN: Bold Authority + Modern Sophistication
   Navigation: Sticky header with clear CTAs
-  High-converting with prominent booking button
+  High-converting with prominent booking button and cart
 */
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingCart } from "lucide-react";
+import CartDrawer from "./CartDrawer";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -15,6 +18,7 @@ const navLinks = [
   { href: "/speaking", label: "Speaking" },
   { href: "/consulting", label: "Consulting" },
   { href: "/books", label: "Books" },
+  { href: "/ai-news", label: "AI News" },
   { href: "/foundation", label: "Foundation" },
 ];
 
@@ -22,6 +26,11 @@ export default function Navigation() {
   const [location] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+
+  const { data: cart } = trpc.cart.get.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,8 +83,25 @@ export default function Navigation() {
               ))}
             </div>
 
-            {/* CTA Button */}
-            <div className="hidden lg:block">
+            {/* CTA Buttons & Cart */}
+            <div className="hidden lg:flex items-center gap-4">
+              {/* Cart Icon */}
+              <CartDrawer
+                trigger={
+                  <button className="relative p-2 rounded-full transition-colors hover:bg-gray-100">
+                    <ShoppingCart size={22} style={{ color: "oklch(0.25 0.02 250)" }} />
+                    {isAuthenticated && cart && cart.itemCount > 0 && (
+                      <span 
+                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center"
+                        style={{ backgroundColor: "oklch(0.72 0.14 85)", color: "oklch(0.15 0.03 250)" }}
+                      >
+                        {cart.itemCount}
+                      </span>
+                    )}
+                  </button>
+                }
+              />
+              
               <Link href="/contact">
                 <motion.span
                   whileHover={{ scale: 1.02 }}
@@ -87,18 +113,35 @@ export default function Navigation() {
               </Link>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2"
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? (
-                <X size={24} style={{ color: "oklch(0.15 0.03 250)" }} />
-              ) : (
-                <Menu size={24} style={{ color: "oklch(0.15 0.03 250)" }} />
-              )}
-            </button>
+            {/* Mobile Menu Button & Cart */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <CartDrawer
+                trigger={
+                  <button className="relative p-2 rounded-full">
+                    <ShoppingCart size={22} style={{ color: "oklch(0.15 0.03 250)" }} />
+                    {isAuthenticated && cart && cart.itemCount > 0 && (
+                      <span 
+                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center"
+                        style={{ backgroundColor: "oklch(0.72 0.14 85)", color: "oklch(0.15 0.03 250)" }}
+                      >
+                        {cart.itemCount}
+                      </span>
+                    )}
+                  </button>
+                }
+              />
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2"
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X size={24} style={{ color: "oklch(0.15 0.03 250)" }} />
+                ) : (
+                  <Menu size={24} style={{ color: "oklch(0.15 0.03 250)" }} />
+                )}
+              </button>
+            </div>
           </nav>
         </div>
       </motion.header>

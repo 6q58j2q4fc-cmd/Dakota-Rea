@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, cartItems, orders, InsertCartItem, InsertOrder } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,201 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// ==================== CART OPERATIONS ====================
+
+/**
+ * Get all cart items for a user
+ */
+export async function getCartItems(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get cart items: database not available");
+    return [];
+  }
+
+  const result = await db.select().from(cartItems).where(eq(cartItems.userId, userId));
+  return result;
+}
+
+/**
+ * Add item to cart or update quantity if exists
+ */
+export async function addToCart(userId: number, productId: string, quantity: number = 1) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  // Check if item already exists in cart
+  const existing = await db.select()
+    .from(cartItems)
+    .where(and(
+      eq(cartItems.userId, userId),
+      eq(cartItems.productId, parseInt(productId) || 0)
+    ))
+    .limit(1);
+
+  if (existing.length > 0) {
+    // Update quantity
+    const newQuantity = existing[0].quantity + quantity;
+    await db.update(cartItems)
+      .set({ quantity: newQuantity })
+      .where(eq(cartItems.id, existing[0].id));
+    return { ...existing[0], quantity: newQuantity };
+  } else {
+    // Insert new item
+    const result = await db.insert(cartItems).values({
+      userId,
+      productId: parseInt(productId) || 0,
+      quantity,
+    });
+    return { id: result[0].insertId, userId, productId: parseInt(productId), quantity };
+  }
+}
+
+/**
+ * Update cart item quantity
+ */
+export async function updateCartItemQuantity(userId: number, cartItemId: number, quantity: number) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  if (quantity <= 0) {
+    // Remove item if quantity is 0 or less
+    await db.delete(cartItems)
+      .where(and(
+        eq(cartItems.id, cartItemId),
+        eq(cartItems.userId, userId)
+      ));
+    return null;
+  }
+
+  await db.update(cartItems)
+    .set({ quantity })
+    .where(and(
+      eq(cartItems.id, cartItemId),
+      eq(cartItems.userId, userId)
+    ));
+  
+  return { id: cartItemId, quantity };
+}
+
+/**
+ * Remove item from cart
+ */
+export async function removeFromCart(userId: number, cartItemId: number) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.delete(cartItems)
+    .where(and(
+      eq(cartItems.id, cartItemId),
+      eq(cartItems.userId, userId)
+    ));
+  
+  return true;
+}
+
+/**
+ * Clear all items from user's cart
+ */
+export async function clearCart(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.delete(cartItems).where(eq(cartItems.userId, userId));
+  return true;
+}
+
+// ==================== ORDER OPERATIONS ====================
+
+/**
+ * Create a new order
+ */
+export async function createOrder(order: InsertOrder) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.insert(orders).values(order);
+  return { id: result[0].insertId, ...order };
+}
+
+/**
+ * Get orders for a user
+ */
+export async function getUserOrders(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get orders: database not available");
+    return [];
+  }
+
+  const result = await db.select().from(orders).where(eq(orders.userId, userId));
+  return result;
+}
+
+/**
+ * Update order status
+ */
+export async function updateOrderStatus(orderId: number, status: "pending" | "paid" | "shipped" | "delivered" | "cancelled") {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(orders).set({ status }).where(eq(orders.id, orderId));
+  return true;
+}
+
+/**
+ * Update order with Stripe payment intent
+ */
+export async function updateOrderPayment(sessionId: string, paymentIntentId: string) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(orders)
+    .set({ 
+      stripePaymentIntentId: paymentIntentId,
+      status: "paid"
+    })
+    .where(eq(orders.stripeSessionId, sessionId));
+  
+  return true;
+}
+
+/**
+ * Get order by Stripe session ID
+ */
+export async function getOrderBySessionId(sessionId: string) {
+  const db = await getDb();
+  if (!db) {
+    return null;
+  }
+
+  const result = await db.select().from(orders).where(eq(orders.stripeSessionId, sessionId)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+/**
+ * Update user's Stripe customer ID
+ */
+export async function updateUserStripeCustomerId(userId: number, stripeCustomerId: string) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(users).set({ stripeCustomerId }).where(eq(users.id, userId));
+  return true;
+}
