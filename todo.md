@@ -5,3 +5,6 @@
 - [x] Refocus website on AI ethics, AI strategy consulting, and product development
 - [x] Update SEO with high-demand AI consulting industry keywords
 - [x] Remove Solicitor Trainee floating card near hero image for smoother flow
+- [x] Redesign hero section for better image-copy integration
+- [x] Add interactive elements and smooth animations
+- [x] Enhance navigation with intuitive click-throughs
