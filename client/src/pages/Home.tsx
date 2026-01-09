@@ -92,8 +92,9 @@ export default function Home() {
               <div className="relative aspect-[3/4] lg:aspect-[4/5] overflow-hidden">
                 <img
                   src="/images/hero-portrait.png"
-                  alt="Dakota Rea - Entrepreneur and Scholar"
+                  alt="Dakota Rea - Entrepreneur, Inventor, Philanthropist, AI Ethics Expert, Harvard and Oxford Graduate"
                   className="w-full h-full object-cover"
+                  title="Dakota Rea - Global Thought Leader and Keynote Speaker"
                 />
                 {/* Editorial frame accent */}
                 <div 
@@ -147,8 +148,9 @@ export default function Home() {
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src="/images/hero-global.png"
-                  alt="Dakota Rea traveling the world"
+                  alt="Dakota Rea global travels - 60+ countries visited as keynote speaker and AI ethics consultant"
                   className="w-full h-full object-cover"
+                  title="Dakota Rea's Global Speaking Experience"
                 />
               </div>
               {/* Floating caption */}
@@ -243,8 +245,9 @@ export default function Home() {
         <div className="absolute inset-0">
           <img
             src="/images/hero-speaking.png"
-            alt="Dakota Rea speaking at conference"
+            alt="Dakota Rea keynote speaker at global innovation conference - AI ethics and leadership presentations"
             className="w-full h-full object-cover"
+            title="Dakota Rea Keynote Speaking Engagements"
           />
           <div className="absolute inset-0" style={{ backgroundColor: "oklch(0.25 0.01 50 / 0.85)" }} />
         </div>
@@ -333,8 +336,9 @@ export default function Home() {
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src="/images/hero-books.png"
-                  alt="Dakota Rea's published books"
+                  alt="Dakota Rea published books on AI ethics, leadership, and philosophy - available for order and pre-order"
                   className="w-full h-full object-cover"
+                  title="Books by Dakota Rea"
                 />
               </div>
             </motion.div>
@@ -357,8 +361,9 @@ export default function Home() {
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src="/images/hero-philanthropy.png"
-                  alt="Tudor Foundation community work"
+                  alt="Tudor Foundation philanthropy and community empowerment - education and ethical technology initiatives founded by Dakota Rea"
                   className="w-full h-full object-cover"
+                  title="The Tudor Foundation - Founded by Dakota Rea"
                 />
               </div>
             </motion.div>
