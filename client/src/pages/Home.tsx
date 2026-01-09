@@ -179,24 +179,7 @@ export default function Home() {
                   className="relative z-10 w-full h-auto object-cover shadow-2xl"
                   style={{ maxHeight: "600px" }}
                 />
-                {/* Floating credential card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="absolute -bottom-6 -left-6 z-20 p-4 shadow-xl"
-                  style={{ backgroundColor: "oklch(0.15 0.03 250)" }}
-                >
-                  <p className="font-heading text-xs font-semibold tracking-wider uppercase mb-1" style={{ color: "oklch(0.72 0.14 85)" }}>
-                    Currently at
-                  </p>
-                  <p className="font-display text-lg font-bold" style={{ color: "oklch(0.97 0.01 90)" }}>
-                    Slaughter and May
-                  </p>
-                  <p className="font-body text-sm" style={{ color: "oklch(0.97 0.01 90 / 0.7)" }}>
-                    UK Solicitor Trainee
-                  </p>
-                </motion.div>
+
               </div>
             </motion.div>
           </div>
