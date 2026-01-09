@@ -19,3 +19,8 @@
 - [x] Create cart UI components (cart drawer, cart page, checkout)
 - [x] Update Books page with add-to-cart buttons
 - [x] Test complete shopping cart and checkout flow
+- [x] Create Alfred AI chatbot backend with LLM integration
+- [x] Build Alfred chat UI component with high-tech futuristic design
+- [x] Add Alfred's personalized greeting and personality
+- [x] Integrate Alfred into the website with floating chat button
+- [x] Test Alfred chatbot functionality

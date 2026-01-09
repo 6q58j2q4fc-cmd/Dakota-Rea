@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { fetchAINews } from "./news";
+import { chatWithAlfred, getAlfredGreeting } from "./alfred";
 import { PRODUCTS, getProductById, formatPrice } from "./products";
 import { 
   getCartItems, 
@@ -250,6 +251,33 @@ export const appRouter = router({
           sessionId: session.id,
           url: session.url,
         };
+      }),
+  }),
+
+  // Alfred AI Chatbot router
+  alfred: router({
+    greeting: publicProcedure.query(() => {
+      return getAlfredGreeting();
+    }),
+    
+    chat: publicProcedure
+      .input(z.object({
+        message: z.string().min(1).max(2000),
+        history: z.array(z.object({
+          role: z.enum(["user", "assistant"]),
+          content: z.string(),
+          timestamp: z.string().or(z.date()),
+        })).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const history = input.history?.map(h => ({
+          role: h.role as "user" | "assistant",
+          content: h.content,
+          timestamp: new Date(h.timestamp),
+        })) || [];
+        
+        const response = await chatWithAlfred(input.message, history);
+        return response;
       }),
   }),
 

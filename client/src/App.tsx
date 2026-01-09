@@ -14,6 +14,7 @@ import Contact from "./pages/Contact";
 import Press from "./pages/Press";
 import AINews from "./pages/AINews";
 import Orders from "./pages/Orders";
+import AlfredChat from "./components/AlfredChat";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -58,6 +59,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <AlfredChat />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
