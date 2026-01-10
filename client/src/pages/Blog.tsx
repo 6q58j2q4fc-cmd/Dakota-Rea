@@ -240,31 +240,7 @@ export default function Blog() {
               />
             </div>
 
-            {/* Generate New Article Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => generateMutation.mutate()}
-              disabled={generateMutation.isPending}
-              className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium text-sm transition-all"
-              style={{ 
-                backgroundColor: "oklch(0.72 0.14 85)",
-                color: "oklch(0.15 0.03 250)",
-                opacity: generateMutation.isPending ? 0.7 : 1
-              }}
-            >
-              {generateMutation.isPending ? (
-                <>
-                  <Loader2 className="animate-spin" size={16} />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <RefreshCw size={16} />
-                  Generate New Article
-                </>
-              )}
-            </motion.button>
+            {/* Auto-generated articles - no manual generation button */}
           </div>
 
           {/* Categories */}

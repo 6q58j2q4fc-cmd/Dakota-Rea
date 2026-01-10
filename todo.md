@@ -35,3 +35,10 @@
 - [x] Add Calendly integration for "Book a Strategy Call" buttons
 - [x] Set up email automation with Mailchimp/ConvertKit for newsletter forms
 - [x] Add close/dismiss button to Alfred AI Assistant widget
+- [x] Update UK Solicitor text to "UK Solicitor Trainee tutored by a member of the Oxford Faculty of Law"
+- [x] Reposition Alfred widget away from credentials badge
+- [x] Change Alfred button/window color to yellow gold
+- [x] Create auto-updating credentials badge system
+- [x] Set up automatic daily article generation for each category
+- [x] Remove public article generation button
+- [x] Build custom booking calendar with email notifications to dakotarea@gmail.com

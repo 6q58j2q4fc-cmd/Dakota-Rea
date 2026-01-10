@@ -367,3 +367,75 @@ export async function getBlogPostBySlug(slug: string) {
   const result = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug)).limit(1);
   return result[0] || null;
 }
+
+
+// ==================== BOOKING OPERATIONS ====================
+
+/**
+ * Create a new booking request
+ */
+export async function createBookingRequest(booking: {
+  meetingType: string;
+  requestedDate: Date;
+  requestedTime: string;
+  name: string;
+  email: string;
+  company?: string;
+  message?: string;
+}) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  
+  const { bookingRequests } = await import("../drizzle/schema");
+  const result = await db.insert(bookingRequests).values({
+    meetingType: booking.meetingType,
+    requestedDate: booking.requestedDate,
+    requestedTime: booking.requestedTime,
+    name: booking.name,
+    email: booking.email,
+    company: booking.company || null,
+    message: booking.message || null,
+    status: "pending",
+  });
+  return { id: result[0].insertId, ...booking };
+}
+
+/**
+ * Get all booking requests
+ */
+export async function getBookingRequests(status?: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { bookingRequests } = await import("../drizzle/schema");
+  const { desc } = await import("drizzle-orm");
+  
+  if (status) {
+    return db.select().from(bookingRequests)
+      .where(eq(bookingRequests.status, status as "pending" | "confirmed" | "declined" | "cancelled"))
+      .orderBy(desc(bookingRequests.createdAt));
+  }
+  return db.select().from(bookingRequests).orderBy(desc(bookingRequests.createdAt));
+}
+
+/**
+ * Update booking request status
+ */
+export async function updateBookingStatus(
+  bookingId: number, 
+  status: "pending" | "confirmed" | "declined" | "cancelled",
+  adminNotes?: string
+) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  
+  const { bookingRequests } = await import("../drizzle/schema");
+  await db.update(bookingRequests)
+    .set({ status, adminNotes: adminNotes || null })
+    .where(eq(bookingRequests.id, bookingId));
+  return true;
+}

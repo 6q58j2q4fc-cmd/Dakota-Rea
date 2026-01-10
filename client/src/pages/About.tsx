@@ -18,8 +18,8 @@ const timeline = [
   },
   {
     year: "2024",
-    title: "UK Solicitor at Slaughter and May",
-    description: "Joined one of the world's most prestigious law firms, specializing in corporate and commercial law.",
+    title: "UK Solicitor Trainee at Slaughter and May",
+    description: "Joined one of the world's most prestigious law firms as a trainee, tutored by a member of the Oxford Faculty of Law.",
     icon: Building,
   },
   {
@@ -61,7 +61,7 @@ const expertise = [
   },
   {
     title: "Corporate Law & Strategy",
-    description: "UK Solicitor at Slaughter and May with expertise in corporate transactions and commercial strategy.",
+    description: "UK Solicitor Trainee at Slaughter and May, tutored by a member of the Oxford Faculty of Law, with expertise in corporate transactions and commercial strategy.",
     icon: Building,
   },
   {
@@ -107,8 +107,8 @@ export default function About() {
                 Dakota brings a truly global perspective to every endeavor.
               </p>
               <p className="font-body text-lg leading-relaxed mb-8" style={{ color: "oklch(0.35 0.02 250)" }}>
-                Currently serving as a UK Solicitor at Slaughter and May—one of the world's 
-                most prestigious law firms—Dakota continues to bridge the worlds of law, 
+                Currently serving as a UK Solicitor Trainee at Slaughter and May—one of the world's 
+                most prestigious law firms—and tutored by a member of the Oxford Faculty of Law, Dakota continues to bridge the worlds of law, 
                 technology, and ethics while advancing research on AI's impact on society.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -229,8 +229,8 @@ export default function About() {
                 </p>
                 
                 <p className="font-body text-lg leading-relaxed" style={{ color: "oklch(0.35 0.02 250)" }}>
-                  Today, Dakota serves as a UK Solicitor at Slaughter and May, one of the world's 
-                  most prestigious law firms. This role allows him to combine his legal expertise 
+                  Today, Dakota serves as a UK Solicitor Trainee at Slaughter and May, one of the world's 
+                  most prestigious law firms, where he is tutored by a member of the Oxford Faculty of Law. This role allows him to combine his legal expertise 
                   with his passion for ethical business practices, advising clients on complex 
                   corporate matters while maintaining the highest standards of integrity.
                 </p>

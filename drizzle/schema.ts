@@ -112,3 +112,33 @@ export const blogPosts = mysqlTable("blog_posts", {
 
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = typeof blogPosts.$inferInsert;
+
+/**
+ * Booking requests table for meeting scheduling
+ */
+export const bookingRequests = mysqlTable("booking_requests", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Type of meeting: strategy, speaking, consulting */
+  meetingType: varchar("meetingType", { length: 50 }).notNull(),
+  /** Requested date */
+  requestedDate: timestamp("requestedDate").notNull(),
+  /** Requested time slot */
+  requestedTime: varchar("requestedTime", { length: 10 }).notNull(),
+  /** Requester's name */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** Requester's email */
+  email: varchar("email", { length: 320 }).notNull(),
+  /** Requester's company (optional) */
+  company: varchar("company", { length: 255 }),
+  /** Message/notes from requester */
+  message: text("message"),
+  /** Status of the booking request */
+  status: mysqlEnum("status", ["pending", "confirmed", "declined", "cancelled"]).default("pending").notNull(),
+  /** Admin notes */
+  adminNotes: text("adminNotes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BookingRequest = typeof bookingRequests.$inferSelect;
+export type InsertBookingRequest = typeof bookingRequests.$inferInsert;

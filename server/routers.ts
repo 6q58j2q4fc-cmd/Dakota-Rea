@@ -17,8 +17,10 @@ import {
   updateUserStripeCustomerId,
   createBlogPost,
   getBlogPosts,
-  getBlogPostById
+  getBlogPostById,
+  createBookingRequest
 } from "./db";
+import { sendBookingNotificationToAdmin, sendBookingConfirmationToRequester } from "./email";
 import { generateBlogPost, getRandomTopic, getRandomKeywords } from "./blog";
 import Stripe from "stripe";
 import { ENV } from "./_core/env";
@@ -378,6 +380,64 @@ export const appRouter = router({
         return {
           success: true,
           message: "Successfully subscribed to newsletter",
+        };
+      }),
+  }),
+
+  // Booking router for meeting requests
+  booking: router({
+    request: publicProcedure
+      .input(z.object({
+        meetingType: z.enum(["strategy", "speaking", "consulting"]),
+        date: z.string(),
+        time: z.string(),
+        name: z.string().min(1),
+        email: z.string().email(),
+        company: z.string().optional(),
+        message: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        // Parse the date
+        const requestedDate = new Date(input.date);
+        
+        // Create booking request in database
+        const booking = await createBookingRequest({
+          meetingType: input.meetingType,
+          requestedDate,
+          requestedTime: input.time,
+          name: input.name,
+          email: input.email,
+          company: input.company,
+          message: input.message,
+        });
+        
+        // Format date for emails
+        const formattedDate = requestedDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        
+        // Send notification emails
+        const emailData = {
+          meetingType: input.meetingType,
+          date: formattedDate,
+          time: input.time,
+          name: input.name,
+          email: input.email,
+          company: input.company,
+          message: input.message,
+        };
+        
+        // Send emails (non-blocking)
+        sendBookingNotificationToAdmin(emailData).catch(console.error);
+        sendBookingConfirmationToRequester(emailData).catch(console.error);
+        
+        return {
+          success: true,
+          bookingId: booking.id,
+          message: "Booking request submitted successfully",
         };
       }),
   }),

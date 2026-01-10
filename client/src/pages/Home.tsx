@@ -10,8 +10,9 @@ import { motion } from "framer-motion";
 import { ArrowRight, Globe, Award, Building, CheckCircle, Brain, Shield, Zap, ChevronDown, ExternalLink, Newspaper, BookOpen, Microscope, TrendingUp } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import CalendlyButton from "@/components/CalendlyButton";
+import BookingCalendar from "@/components/BookingCalendar";
 import NewsletterForm from "@/components/NewsletterForm";
+import CredentialsBadge from "@/components/CredentialsBadge";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -152,11 +153,11 @@ export default function Home() {
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4 mb-10">
-                <CalendlyButton 
-                  text="Book a Strategy Call" 
-                  variant="primary" 
+                <BookingCalendar 
+                  buttonText="Book a Strategy Call" 
                   meetingType="strategy"
-                  className="shadow-lg"
+                  buttonClassName="px-6 py-3.5 font-semibold text-base shadow-lg"
+                  buttonStyle={{ backgroundColor: "oklch(0.72 0.14 85)", color: "oklch(0.15 0.03 250)" }}
                 />
                 <Link href="/ai-news">
                   <motion.span
@@ -212,24 +213,8 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
                 </div>
                 
-                {/* Credential Card */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="absolute -bottom-4 -left-4 p-4 shadow-xl"
-                  style={{ backgroundColor: "oklch(0.15 0.03 250)" }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 flex items-center justify-center" style={{ backgroundColor: "oklch(0.72 0.14 85)" }}>
-                      <Award size={20} style={{ color: "oklch(0.15 0.03 250)" }} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: "oklch(0.72 0.14 85)" }}>Oxford Scholar</p>
-                      <p className="text-sm font-medium" style={{ color: "oklch(0.97 0.01 90)" }}>Jeremy Bentham 2025</p>
-                    </div>
-                  </div>
-                </motion.div>
+                {/* Auto-updating Credentials Badge */}
+                <CredentialsBadge />
               </div>
             </motion.div>
           </div>

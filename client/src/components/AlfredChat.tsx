@@ -127,7 +127,7 @@ export default function AlfredChat() {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2"
+            className="fixed bottom-24 right-6 z-50 flex flex-col items-end gap-2"
           >
             {/* Label Card */}
             {!isLabelHidden && (
@@ -138,8 +138,8 @@ export default function AlfredChat() {
                 transition={{ delay: 0.3 }}
                 className="px-4 py-3 rounded-xl shadow-lg max-w-[200px] relative"
                 style={{ 
-                  backgroundColor: "oklch(0.15 0.03 250)",
-                  border: "1px solid oklch(0.72 0.14 85 / 0.3)",
+                  backgroundColor: "oklch(0.72 0.14 85)",
+                  border: "1px solid oklch(0.62 0.14 85)",
                 }}
               >
                 {/* Close button for label */}
@@ -148,16 +148,16 @@ export default function AlfredChat() {
                     e.stopPropagation();
                     setIsLabelHidden(true);
                   }}
-                  className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center transition-colors hover:bg-white/20"
-                  style={{ backgroundColor: "oklch(0.25 0.03 250)" }}
+                  className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center transition-colors hover:bg-black/20"
+                  style={{ backgroundColor: "oklch(0.15 0.03 250)" }}
                   aria-label="Dismiss Alfred introduction"
                 >
                   <X size={12} className="text-white/70" />
                 </button>
-                <p className="text-xs font-semibold mb-1" style={{ color: "oklch(0.72 0.14 85)" }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: "oklch(0.15 0.03 250)" }}>
                   Meet Alfred
                 </p>
-                <p className="text-xs leading-relaxed" style={{ color: "oklch(0.97 0.01 90 / 0.8)" }}>
+                <p className="text-xs leading-relaxed" style={{ color: "oklch(0.15 0.03 250 / 0.9)" }}>
                   Advanced AI Assistant designed by Dakota Rea
                 </p>
               </motion.div>
