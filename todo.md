@@ -34,3 +34,4 @@
 - [x] Integrate real news API for live AI news on AI News page
 - [x] Add Calendly integration for "Book a Strategy Call" buttons
 - [x] Set up email automation with Mailchimp/ConvertKit for newsletter forms
+- [x] Add close/dismiss button to Alfred AI Assistant widget
