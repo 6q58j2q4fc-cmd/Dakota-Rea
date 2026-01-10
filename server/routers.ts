@@ -14,8 +14,12 @@ import {
   clearCart,
   createOrder,
   getUserOrders,
-  updateUserStripeCustomerId
+  updateUserStripeCustomerId,
+  createBlogPost,
+  getBlogPosts,
+  getBlogPostById
 } from "./db";
+import { generateBlogPost, getRandomTopic, getRandomKeywords } from "./blog";
 import Stripe from "stripe";
 import { ENV } from "./_core/env";
 
@@ -279,6 +283,77 @@ export const appRouter = router({
         const response = await chatWithAlfred(input.message, history);
         return response;
       }),
+  }),
+
+  // Blog router for auto-generated SEO content
+  blog: router({
+    list: publicProcedure
+      .input(z.object({
+        category: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const posts = await getBlogPosts(input?.category);
+        return posts.map(post => ({
+          id: post.id.toString(),
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt || "",
+          category: post.category,
+          author: post.author,
+          readTime: post.readTime || 5,
+          publishedAt: post.publishedAt,
+          keywords: (post.keywords as string[]) || [],
+        }));
+      }),
+
+    get: publicProcedure
+      .input(z.object({ id: z.string() }))
+      .query(async ({ input }) => {
+        const post = await getBlogPostById(parseInt(input.id));
+        if (!post) return null;
+        return {
+          id: post.id.toString(),
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt || "",
+          content: post.content,
+          category: post.category,
+          author: post.author,
+          readTime: post.readTime || 5,
+          publishedAt: post.publishedAt,
+          keywords: (post.keywords as string[]) || [],
+          sources: (post.sources as { name: string; url: string }[]) || [],
+        };
+      }),
+
+    generate: publicProcedure.mutation(async () => {
+      const { topic, category } = getRandomTopic();
+      const keywords = getRandomKeywords(5);
+      
+      const post = await generateBlogPost(topic, category, keywords);
+      
+      // Save to database
+      const saved = await createBlogPost({
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        content: post.content,
+        category: post.category,
+        keywords: post.keywords,
+        sources: post.sources,
+        author: post.author,
+        readTime: post.readTime,
+      });
+      
+      return {
+        success: true,
+        post: {
+          id: saved?.id?.toString() || post.id,
+          title: post.title,
+          slug: post.slug,
+        },
+      };
+    }),
   }),
 
   // Orders router

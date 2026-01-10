@@ -19,6 +19,7 @@ const navLinks = [
   { href: "/consulting", label: "Consulting" },
   { href: "/books", label: "Books" },
   { href: "/ai-news", label: "AI News" },
+  { href: "/blog", label: "Blog" },
   { href: "/foundation", label: "Foundation" },
 ];
 

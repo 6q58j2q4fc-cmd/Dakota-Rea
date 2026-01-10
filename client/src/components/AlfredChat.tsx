@@ -119,36 +119,54 @@ export default function AlfredChat() {
 
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Floating Chat Button with Label */}
       <AnimatePresence>
         {!isOpen && (
-          <motion.button
+          <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center group"
-            style={{
-              background: "linear-gradient(135deg, oklch(0.72 0.14 85) 0%, oklch(0.62 0.14 85) 100%)",
-            }}
+            className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2"
           >
-            {/* Pulse animation */}
-            <span className="absolute inset-0 rounded-full animate-ping opacity-30" style={{ backgroundColor: "oklch(0.72 0.14 85)" }} />
+            {/* Label Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="px-4 py-3 rounded-xl shadow-lg max-w-[200px]"
+              style={{ 
+                backgroundColor: "oklch(0.15 0.03 250)",
+                border: "1px solid oklch(0.72 0.14 85 / 0.3)",
+              }}
+            >
+              <p className="text-xs font-semibold mb-1" style={{ color: "oklch(0.72 0.14 85)" }}>
+                Meet Alfred
+              </p>
+              <p className="text-xs leading-relaxed" style={{ color: "oklch(0.97 0.01 90 / 0.8)" }}>
+                Advanced AI Assistant designed by Dakota Rea
+              </p>
+            </motion.div>
             
-            {/* Icon */}
-            <div className="relative flex items-center justify-center">
-              <Bot size={28} className="text-white" />
-              <Sparkles size={14} className="absolute -top-1 -right-1 text-white animate-pulse" />
-            </div>
-            
-            {/* Tooltip */}
-            <span className="absolute right-full mr-3 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-              style={{ backgroundColor: "oklch(0.15 0.03 250)", color: "oklch(0.97 0.01 90)" }}>
-              Chat with Alfred
-            </span>
-          </motion.button>
+            {/* Chat Button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsOpen(true)}
+              className="w-16 h-16 rounded-full shadow-2xl flex items-center justify-center group relative"
+              style={{
+                background: "linear-gradient(135deg, oklch(0.72 0.14 85) 0%, oklch(0.62 0.14 85) 100%)",
+              }}
+            >
+              {/* Pulse animation */}
+              <span className="absolute inset-0 rounded-full animate-ping opacity-30" style={{ backgroundColor: "oklch(0.72 0.14 85)" }} />
+              
+              {/* Icon */}
+              <div className="relative flex items-center justify-center">
+                <Bot size={28} className="text-white" />
+                <Sparkles size={14} className="absolute -top-1 -right-1 text-white animate-pulse" />
+              </div>
+            </motion.button>
+          </motion.div>
         )}
       </AnimatePresence>
 

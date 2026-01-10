@@ -14,46 +14,38 @@ export interface ProductDefinition {
 }
 
 export const PRODUCTS: ProductDefinition[] = [
-  // Current Books
+  // Current Books - Dakota Rea's actual published works
   {
-    id: "book-ai-ethics-enterprise",
-    name: "AI Ethics for the Enterprise",
-    description: "A comprehensive guide to implementing ethical AI systems in Fortune 500 companies. Learn frameworks for responsible AI governance, bias mitigation, and stakeholder alignment.",
-    price: 3999, // $39.99
-    imageUrl: "/images/books-collection.png",
-    category: "book",
-  },
-  {
-    id: "book-bentham-modern-age",
-    name: "Bentham in the Modern Age",
-    description: "Exploring Jeremy Bentham's utilitarian philosophy through the lens of artificial intelligence and modern technology. A scholarly work bridging 18th-century ethics with 21st-century challenges.",
-    price: 2999, // $29.99
-    imageUrl: "/images/books-collection.png",
-    category: "book",
-  },
-  {
-    id: "book-global-innovator",
-    name: "The Global Innovator",
-    description: "Insights from traveling to 60+ countries and speaking to thousands of leaders. Discover how diverse perspectives fuel breakthrough innovation and ethical leadership.",
+    id: "book-american-prince",
+    name: "The American Prince",
+    description: "A compelling novel exploring ambition, heritage, and the American dream. Dakota Rea weaves a masterful narrative that examines the pursuit of greatness against the backdrop of modern society.",
     price: 2499, // $24.99
-    imageUrl: "/images/books-collection.png",
+    imageUrl: "/images/american-prince-book.jpg",
+    category: "book",
+  },
+  {
+    id: "book-house-of-tudor",
+    name: "The House of Tudor",
+    description: "A deep dive into Tudor history and its lasting influence on modern governance, ethics, and society. Drawing from Dakota's work with the Tudor Foundation, this book bridges historical scholarship with contemporary relevance.",
+    price: 2999, // $29.99
+    imageUrl: "/images/house-of-tudor-book.jpg",
     category: "book",
   },
   
   // Pre-order Books
   {
-    id: "preorder-genai-playbook",
-    name: "The GenAI Playbook (Pre-order)",
-    description: "Coming Spring 2026. The definitive guide to implementing generative AI in enterprise settings. Pre-order now to receive exclusive early access content and a signed copy.",
-    price: 4499, // $44.99
+    id: "preorder-ai-ethics-enterprise",
+    name: "AI Ethics for the Enterprise (Pre-order)",
+    description: "Coming Spring 2026. A comprehensive guide to implementing ethical AI systems in Fortune 500 companies. Learn frameworks for responsible AI governance, bias mitigation, and stakeholder alignment. Pre-order now for exclusive early access.",
+    price: 3999, // $39.99
     imageUrl: "/images/books-collection.png",
     category: "preorder",
   },
   {
-    id: "preorder-ai-strategy-2030",
-    name: "AI Strategy 2030 (Pre-order)",
-    description: "Coming Fall 2026. A forward-looking analysis of AI trends and strategic frameworks for the next decade. Pre-order includes access to quarterly strategy updates.",
-    price: 3999, // $39.99
+    id: "preorder-genai-playbook",
+    name: "The GenAI Playbook (Pre-order)",
+    description: "Coming Fall 2026. The definitive guide to implementing generative AI in enterprise settings. Pre-order now to receive exclusive early access content and a signed copy.",
+    price: 4499, // $44.99
     imageUrl: "/images/books-collection.png",
     category: "preorder",
   },

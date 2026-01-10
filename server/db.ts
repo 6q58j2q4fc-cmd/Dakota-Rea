@@ -287,3 +287,83 @@ export async function updateUserStripeCustomerId(userId: number, stripeCustomerI
   await db.update(users).set({ stripeCustomerId }).where(eq(users.id, userId));
   return true;
 }
+
+// ==================== BLOG OPERATIONS ====================
+
+/**
+ * Create a new blog post
+ */
+export async function createBlogPost(post: {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  keywords: string[];
+  sources: { name: string; url: string }[];
+  author?: string;
+  readTime?: number;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { blogPosts } = await import("../drizzle/schema");
+  const result = await db.insert(blogPosts).values({
+    title: post.title,
+    slug: post.slug,
+    excerpt: post.excerpt,
+    content: post.content,
+    category: post.category,
+    keywords: post.keywords,
+    sources: post.sources,
+    author: post.author || "Dakota Rea",
+    readTime: post.readTime || 5,
+    isPublished: 1,
+    publishedAt: new Date(),
+  });
+  return { id: result[0].insertId, ...post };
+}
+
+/**
+ * Get all blog posts, optionally filtered by category
+ */
+export async function getBlogPosts(category?: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { blogPosts } = await import("../drizzle/schema");
+  const { desc } = await import("drizzle-orm");
+  
+  if (category) {
+    return db.select().from(blogPosts)
+      .where(eq(blogPosts.category, category))
+      .orderBy(desc(blogPosts.publishedAt));
+  }
+  return db.select().from(blogPosts).orderBy(desc(blogPosts.publishedAt));
+}
+
+/**
+ * Get a single blog post by ID
+ */
+export async function getBlogPostById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { blogPosts } = await import("../drizzle/schema");
+  
+  const result = await db.select().from(blogPosts).where(eq(blogPosts.id, id)).limit(1);
+  return result[0] || null;
+}
+
+/**
+ * Get a single blog post by slug
+ */
+export async function getBlogPostBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { blogPosts } = await import("../drizzle/schema");
+  
+  const result = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug)).limit(1);
+  return result[0] || null;
+}

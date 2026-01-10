@@ -24,3 +24,10 @@
 - [x] Add Alfred's personalized greeting and personality
 - [x] Integrate Alfred into the website with floating chat button
 - [x] Test Alfred chatbot functionality
+- [x] Add Alfred chatbot label/description near the icon
+- [x] Update Alfred to be sales-focused and help convert visitors
+- [x] Add actual book cover images (The American Prince, The House of Tudor)
+- [x] Ensure all books are orderable with functional shopping cart
+- [x] Create auto-blog system that generates relevant AI/business articles
+- [x] Build SEO press release page targeting high-search keywords
+- [x] Implement automatic keyword research for lead generation

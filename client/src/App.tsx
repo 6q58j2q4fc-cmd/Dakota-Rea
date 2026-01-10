@@ -14,6 +14,7 @@ import Contact from "./pages/Contact";
 import Press from "./pages/Press";
 import AINews from "./pages/AINews";
 import Orders from "./pages/Orders";
+import Blog from "./pages/Blog";
 import AlfredChat from "./components/AlfredChat";
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/press" component={Press} />
       <Route path="/ai-news" component={AINews} />
       <Route path="/orders" component={Orders} />
+      <Route path="/blog" component={Blog} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
