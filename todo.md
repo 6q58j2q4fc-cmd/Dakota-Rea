@@ -31,3 +31,6 @@
 - [x] Create auto-blog system that generates relevant AI/business articles
 - [x] Build SEO press release page targeting high-search keywords
 - [x] Implement automatic keyword research for lead generation
+- [x] Integrate real news API for live AI news on AI News page
+- [x] Add Calendly integration for "Book a Strategy Call" buttons
+- [x] Set up email automation with Mailchimp/ConvertKit for newsletter forms

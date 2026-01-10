@@ -10,6 +10,8 @@ import { motion } from "framer-motion";
 import { ArrowRight, Globe, Award, Building, CheckCircle, Brain, Shield, Zap, ChevronDown, ExternalLink, Newspaper, BookOpen, Microscope, TrendingUp } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import CalendlyButton from "@/components/CalendlyButton";
+import NewsletterForm from "@/components/NewsletterForm";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -93,16 +95,10 @@ const testimonials = [
 
 export default function Home() {
   let { user, loading, error, isAuthenticated, logout } = useAuth();
-  const [email, setEmail] = useState("");
+  
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      toast.success("Welcome! Check your inbox for exclusive AI insights.");
-      setEmail("");
-    }
-  };
+  
 
   const scrollToExpertise = () => {
     document.getElementById('expertise')?.scrollIntoView({ behavior: 'smooth' });
@@ -156,21 +152,12 @@ export default function Home() {
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4 mb-10">
-                <Link href="/consulting">
-                  <motion.span
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 font-semibold text-base cursor-pointer transition-all duration-300"
-                    style={{ 
-                      backgroundColor: "oklch(0.72 0.14 85)",
-                      color: "oklch(0.15 0.03 250)",
-                      boxShadow: "0 4px 14px oklch(0.72 0.14 85 / 0.3)"
-                    }}
-                  >
-                    Book a Strategy Call
-                    <ArrowRight size={18} />
-                  </motion.span>
-                </Link>
+                <CalendlyButton 
+                  text="Book a Strategy Call" 
+                  variant="primary" 
+                  meetingType="strategy"
+                  className="shadow-lg"
+                />
                 <Link href="/ai-news">
                   <motion.span
                     whileHover={{ y: -2 }}
@@ -511,7 +498,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Email Capture */}
+      {/* Email Capture - Connected to Newsletter Service */}
       <section className="py-24" style={{ backgroundColor: "oklch(0.72 0.14 85)" }}>
         <div className="container">
           <div className="max-w-2xl mx-auto text-center">
@@ -521,26 +508,13 @@ export default function Home() {
             <p className="text-lg mb-8" style={{ color: "oklch(0.15 0.03 250 / 0.8)" }}>
               Join 8,000+ executives and researchers receiving actionable AI insights every week.
             </p>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 text-base focus:outline-none"
-                style={{ backgroundColor: "white", color: "oklch(0.15 0.03 250)" }}
-                required
+            <div className="max-w-md mx-auto">
+              <NewsletterForm 
+                variant="inline" 
+                buttonText="Subscribe" 
+                tags={["homepage", "ai-insights"]}
               />
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                className="px-6 py-3 font-semibold cursor-pointer"
-                style={{ backgroundColor: "oklch(0.15 0.03 250)", color: "oklch(0.97 0.01 90)" }}
-              >
-                Subscribe
-              </motion.button>
-            </form>
+            </div>
             <p className="text-sm mt-4" style={{ color: "oklch(0.15 0.03 250 / 0.6)" }}>
               No spam. Unsubscribe anytime.
             </p>

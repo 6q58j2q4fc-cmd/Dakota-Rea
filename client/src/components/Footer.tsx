@@ -4,10 +4,8 @@
 */
 
 import { Link } from "wouter";
-import { motion } from "framer-motion";
-import { ArrowRight, Linkedin, Twitter, Instagram, Mail } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+import { Linkedin, Twitter, Instagram, Mail } from "lucide-react";
+import NewsletterForm from "@/components/NewsletterForm";
 
 const quickLinks = [
   { href: "/about", label: "About" },
@@ -25,16 +23,6 @@ const socialLinks = [
 ];
 
 export default function Footer() {
-  const [email, setEmail] = useState("");
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      toast.success("Thank you for subscribing! You'll receive insights soon.");
-      setEmail("");
-    }
-  };
-
   return (
     <footer style={{ backgroundColor: "oklch(0.15 0.03 250)" }}>
       {/* Newsletter Section */}
@@ -50,30 +38,12 @@ export default function Footer() {
                 innovation, and building a meaningful legacy.
               </p>
             </div>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="flex-1 px-6 py-4 font-body text-base rounded-none"
-                style={{ 
-                  backgroundColor: "oklch(0.20 0.03 250)",
-                  border: "1px solid oklch(0.30 0.02 250)",
-                  color: "oklch(0.97 0.01 90)"
-                }}
-                required
-              />
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                className="btn-primary whitespace-nowrap"
-              >
-                Subscribe
-                <ArrowRight size={16} />
-              </motion.button>
-            </form>
+            <NewsletterForm 
+              variant="footer" 
+              title=""
+              description=""
+              tags={["footer", "newsletter"]}
+            />
           </div>
         </div>
       </div>

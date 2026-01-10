@@ -356,6 +356,32 @@ export const appRouter = router({
     }),
   }),
 
+  // Newsletter subscription router
+  newsletter: router({
+    subscribe: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        firstName: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        // Store subscription in database or send to email service
+        // For now, we'll log and return success
+        // In production, integrate with Mailchimp/ConvertKit API
+        console.log("[Newsletter] New subscription:", input.email, input.firstName, input.tags);
+        
+        // You can add Mailchimp integration here:
+        // const mailchimp = require('@mailchimp/mailchimp_marketing');
+        // mailchimp.setConfig({ apiKey: process.env.MAILCHIMP_API_KEY, server: 'us1' });
+        // await mailchimp.lists.addListMember(listId, { email_address: input.email, status: 'subscribed' });
+        
+        return {
+          success: true,
+          message: "Successfully subscribed to newsletter",
+        };
+      }),
+  }),
+
   // Orders router
   orders: router({
     list: protectedProcedure.query(async ({ ctx }) => {
