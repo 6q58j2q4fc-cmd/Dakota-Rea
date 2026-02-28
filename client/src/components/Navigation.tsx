@@ -21,6 +21,7 @@ const navLinks = [
   { href: "/ai-news", label: "AI News" },
   { href: "/blog", label: "Blog" },
   { href: "/foundation", label: "Foundation" },
+  { href: "/members", label: "Members" },
 ];
 
 export default function Navigation() {

@@ -32,10 +32,13 @@ const categories = [
   { id: "Industry Insights", name: "Industry Insights", icon: Globe },
 ];
 
+const POSTS_PER_PAGE = 9;
+
 export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch blog posts
   const { data: posts, isLoading, refetch, isRefetching } = trpc.blog.list.useQuery({
@@ -59,6 +62,14 @@ export default function Blog() {
     searchQuery === "" || 
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Pagination
+  const totalPosts = filteredPosts?.length || 0;
+  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+  const paginatedPosts = filteredPosts?.slice(
+    (currentPage - 1) * POSTS_PER_PAGE,
+    currentPage * POSTS_PER_PAGE
   );
 
   if (selectedPost && postDetail) {
@@ -230,7 +241,7 @@ export default function Blog() {
                 type="text"
                 placeholder="Search articles..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                 className="w-full pl-12 pr-4 py-3 rounded-lg border text-sm"
                 style={{ 
                   borderColor: "oklch(0.90 0.01 90)",
@@ -248,7 +259,7 @@ export default function Blog() {
             {categories.map((category) => (
               <button
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => { setSelectedCategory(category.id); setCurrentPage(1); }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   selectedCategory === category.id ? "" : "hover:opacity-80"
                 }`}
@@ -276,9 +287,10 @@ export default function Blog() {
             <div className="flex justify-center py-20">
               <Loader2 className="animate-spin" size={32} style={{ color: "oklch(0.72 0.14 85)" }} />
             </div>
-          ) : filteredPosts && filteredPosts.length > 0 ? (
+          ) : paginatedPosts && paginatedPosts.length > 0 ? (
+            <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.map((post: { id: string; title: string; slug: string; excerpt: string; category: string; author: string; readTime: number; publishedAt: Date; keywords: string[] }, index: number) => (
+              {paginatedPosts.map((post: { id: string; title: string; slug: string; excerpt: string; category: string; author: string; readTime: number; publishedAt: Date; keywords: string[] }, index: number) => (
                 <motion.article
                   key={post.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -319,14 +331,50 @@ export default function Blog() {
                 </motion.article>
               ))}
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-12">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-40"
+                  style={{ backgroundColor: "oklch(0.95 0.01 90)", color: "oklch(0.35 0.02 250)" }}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className="w-10 h-10 rounded-lg text-sm font-medium transition-all"
+                    style={{
+                      backgroundColor: currentPage === page ? "oklch(0.15 0.03 250)" : "oklch(0.95 0.01 90)",
+                      color: currentPage === page ? "oklch(0.97 0.01 90)" : "oklch(0.35 0.02 250)",
+                    }}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-40"
+                  style={{ backgroundColor: "oklch(0.95 0.01 90)", color: "oklch(0.35 0.02 250)" }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+            </>
           ) : (
             <div className="text-center py-20">
               <BookOpen size={48} className="mx-auto mb-4" style={{ color: "oklch(0.72 0.14 85 / 0.5)" }} />
               <h3 className="text-xl font-semibold mb-2" style={{ color: "oklch(0.15 0.03 250)" }}>
-                No articles yet
+                {searchQuery ? "No articles match your search" : "Articles coming soon"}
               </h3>
               <p className="mb-6" style={{ color: "oklch(0.45 0.02 250)" }}>
-                Click "Generate New Article" to create AI-powered content
+                {searchQuery ? "Try a different search term." : "New articles are published daily. Check back soon!"}
               </p>
             </div>
           )}

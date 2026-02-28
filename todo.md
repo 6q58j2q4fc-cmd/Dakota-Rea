@@ -42,3 +42,11 @@
 - [x] Set up automatic daily article generation for each category
 - [x] Remove public article generation button
 - [x] Build custom booking calendar with email notifications to dakotarea@gmail.com
+- [x] Set up daily cron job for auto blog posting with pagination
+- [x] Add pagination to blog articles list
+- [x] Build custom subscriber/member sign-in system (email/password, no Manus account)
+- [x] Remove American Prince book from Books page
+- [x] Build full notification and email autoresponder using Manus built-in APIs
+- [x] Email autoresponder for newsletter subscribers
+- [x] Email autoresponder for booking requests
+- [ ] Push updated files to GitHub (pending)

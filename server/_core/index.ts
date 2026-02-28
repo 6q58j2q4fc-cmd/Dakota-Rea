@@ -10,6 +10,7 @@ import { serveStatic, setupVite } from "./vite";
 import Stripe from "stripe";
 import { ENV } from "./env";
 import { updateOrderPayment, clearCart, getOrderBySessionId } from "../db";
+import { startBlogScheduler } from "../blogScheduler";
 
 // Initialize Stripe
 const stripe = new Stripe(ENV.stripeSecretKey || "", {
@@ -151,3 +152,6 @@ async function startServer() {
 }
 
 startServer().catch(console.error);
+
+// Start the daily blog scheduler
+startBlogScheduler();

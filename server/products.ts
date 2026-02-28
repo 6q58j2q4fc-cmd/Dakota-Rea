@@ -16,14 +16,6 @@ export interface ProductDefinition {
 export const PRODUCTS: ProductDefinition[] = [
   // Current Books - Dakota Rea's actual published works
   {
-    id: "book-american-prince",
-    name: "The American Prince",
-    description: "A compelling novel exploring ambition, heritage, and the American dream. Dakota Rea weaves a masterful narrative that examines the pursuit of greatness against the backdrop of modern society.",
-    price: 2499, // $24.99
-    imageUrl: "/images/american-prince-book.jpg",
-    category: "book",
-  },
-  {
     id: "book-house-of-tudor",
     name: "The House of Tudor",
     description: "A deep dive into Tudor history and its lasting influence on modern governance, ethics, and society. Drawing from Dakota's work with the Tudor Foundation, this book bridges historical scholarship with contemporary relevance.",

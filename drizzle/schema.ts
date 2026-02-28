@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, json } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, json, boolean } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -26,6 +26,64 @@ export const users = mysqlTable("users", {
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+
+/**
+ * Subscribers table for newsletter/member sign-in (no Manus account required)
+ */
+export const subscribers = mysqlTable("subscribers", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  firstName: varchar("firstName", { length: 255 }),
+  lastName: varchar("lastName", { length: 255 }),
+  /** Hashed password for member sign-in */
+  passwordHash: varchar("passwordHash", { length: 255 }),
+  /** Verification token for email confirmation */
+  verificationToken: varchar("verificationToken", { length: 255 }),
+  /** Whether email is verified */
+  isVerified: int("isVerified").default(0).notNull(),
+  /** Whether subscriber is active */
+  isActive: int("isActive").default(1).notNull(),
+  /** Subscription tags/interests */
+  tags: json("tags"),
+  /** Last login timestamp */
+  lastLoginAt: timestamp("lastLoginAt"),
+  /** Session token for subscriber auth */
+  sessionToken: varchar("sessionToken", { length: 255 }),
+  sessionExpiresAt: timestamp("sessionExpiresAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Subscriber = typeof subscribers.$inferSelect;
+export type InsertSubscriber = typeof subscribers.$inferInsert;
+
+/**
+ * Email logs table for tracking sent emails and autoresponders
+ */
+export const emailLogs = mysqlTable("email_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Recipient email */
+  toEmail: varchar("toEmail", { length: 320 }).notNull(),
+  /** Sender email */
+  fromEmail: varchar("fromEmail", { length: 320 }).notNull(),
+  /** Email subject */
+  subject: varchar("subject", { length: 500 }).notNull(),
+  /** Email type/template */
+  emailType: varchar("emailType", { length: 100 }).notNull(),
+  /** Status of the email */
+  status: mysqlEnum("status", ["pending", "sent", "failed", "bounced"]).default("pending").notNull(),
+  /** Error message if failed */
+  errorMessage: text("errorMessage"),
+  /** Reference ID (subscriber ID, booking ID, etc.) */
+  referenceId: int("referenceId"),
+  /** Reference type */
+  referenceType: varchar("referenceType", { length: 100 }),
+  sentAt: timestamp("sentAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EmailLog = typeof emailLogs.$inferSelect;
+export type InsertEmailLog = typeof emailLogs.$inferInsert;
 
 /**
  * Products table for books and merchandise

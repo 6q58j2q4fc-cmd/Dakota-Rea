@@ -20,7 +20,7 @@ import {
   getBlogPostById,
   createBookingRequest
 } from "./db";
-import { sendBookingNotificationToAdmin, sendBookingConfirmationToRequester } from "./email";
+import { sendBookingNotificationToAdmin, sendBookingConfirmationToRequester } from "./emailService";
 import { generateBlogPost, getRandomTopic, getRandomKeywords } from "./blog";
 import Stripe from "stripe";
 import { ENV } from "./_core/env";
@@ -358,7 +358,7 @@ export const appRouter = router({
     }),
   }),
 
-  // Newsletter subscription router
+  // Newsletter subscription router (delegates to subscriber.subscribe)
   newsletter: router({
     subscribe: publicProcedure
       .input(z.object({
@@ -367,19 +367,17 @@ export const appRouter = router({
         tags: z.array(z.string()).optional(),
       }))
       .mutation(async ({ input }) => {
-        // Store subscription in database or send to email service
-        // For now, we'll log and return success
-        // In production, integrate with Mailchimp/ConvertKit API
-        console.log("[Newsletter] New subscription:", input.email, input.firstName, input.tags);
-        
-        // You can add Mailchimp integration here:
-        // const mailchimp = require('@mailchimp/mailchimp_marketing');
-        // mailchimp.setConfig({ apiKey: process.env.MAILCHIMP_API_KEY, server: 'us1' });
-        // await mailchimp.lists.addListMember(listId, { email_address: input.email, status: 'subscribed' });
-        
+        const { subscribeEmail } = await import("./subscriberAuth");
+        const { sendWelcomeEmail } = await import("./emailService");
+        const result = await subscribeEmail(input);
+        if (!result.alreadySubscribed) {
+          sendWelcomeEmail({ email: result.email, firstName: input.firstName }).catch(console.error);
+        }
         return {
           success: true,
-          message: "Successfully subscribed to newsletter",
+          message: result.alreadySubscribed
+            ? "You're already subscribed!"
+            : "Successfully subscribed! Check your email for a welcome message.",
         };
       }),
   }),
@@ -434,10 +432,140 @@ export const appRouter = router({
         sendBookingNotificationToAdmin(emailData).catch(console.error);
         sendBookingConfirmationToRequester(emailData).catch(console.error);
         
+        // Also notify owner via Manus notification system
+        const { notifyOwner } = await import("./_core/notification");
+        notifyOwner({
+          title: `📅 New Booking: ${input.name} - ${input.meetingType}`,
+          content: `Name: ${input.name}\nEmail: ${input.email}\nDate: ${formattedDate}\nTime: ${input.time}${input.company ? `\nCompany: ${input.company}` : ""}${input.message ? `\nMessage: ${input.message}` : ""}`,
+        }).catch(console.error);
+        
         return {
           success: true,
           bookingId: booking.id,
           message: "Booking request submitted successfully",
+        };
+      }),
+  }),
+
+  // Subscriber router - custom member sign-in (no Manus account required)
+  subscriber: router({
+    register: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string().min(8),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { registerSubscriber } = await import("./subscriberAuth");
+        const { sendVerificationEmail } = await import("./emailService");
+        const sub = await registerSubscriber(input);
+        // Send verification email
+        sendVerificationEmail({
+          email: sub.email,
+          firstName: sub.firstName,
+          verificationToken: sub.verificationToken,
+        }).catch(console.error);
+        return { success: true, message: "Registration successful. Please check your email to verify your account." };
+      }),
+
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { loginSubscriber } = await import("./subscriberAuth");
+        const session = await loginSubscriber(input.email, input.password);
+        // Set session cookie
+        ctx.res.cookie("sub_session", session.sessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
+        return {
+          success: true,
+          user: {
+            id: session.id,
+            email: session.email,
+            firstName: session.firstName,
+            lastName: session.lastName,
+            isVerified: session.isVerified,
+          },
+        };
+      }),
+
+    logout: publicProcedure.mutation(async ({ ctx }) => {
+      const sessionToken = ctx.req.cookies?.sub_session;
+      if (sessionToken) {
+        const { logoutSubscriber } = await import("./subscriberAuth");
+        await logoutSubscriber(sessionToken);
+        ctx.res.clearCookie("sub_session");
+      }
+      return { success: true };
+    }),
+
+    me: publicProcedure.query(async ({ ctx }) => {
+      const sessionToken = ctx.req.cookies?.sub_session;
+      if (!sessionToken) return null;
+      const { verifySubscriberSession } = await import("./subscriberAuth");
+      return verifySubscriberSession(sessionToken);
+    }),
+
+    verifyEmail: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .mutation(async ({ input }) => {
+        const { verifySubscriberEmail } = await import("./subscriberAuth");
+        const { sendWelcomeEmail } = await import("./emailService");
+        const sub = await verifySubscriberEmail(input.token);
+        sendWelcomeEmail({ email: sub.email, firstName: sub.firstName || undefined }).catch(console.error);
+        return { success: true, message: "Email verified successfully!" };
+      }),
+
+    forgotPassword: publicProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        const { generatePasswordResetToken } = await import("./subscriberAuth");
+        const { sendPasswordResetEmail } = await import("./emailService");
+        const result = await generatePasswordResetToken(input.email);
+        if (result) {
+          sendPasswordResetEmail({
+            email: result.email,
+            firstName: result.firstName,
+            resetToken: result.resetToken,
+          }).catch(console.error);
+        }
+        // Always return success to prevent email enumeration
+        return { success: true, message: "If that email exists, a reset link has been sent." };
+      }),
+
+    resetPassword: publicProcedure
+      .input(z.object({ token: z.string(), password: z.string().min(8) }))
+      .mutation(async ({ input }) => {
+        const { resetSubscriberPassword } = await import("./subscriberAuth");
+        return resetSubscriberPassword(input.token, input.password);
+      }),
+
+    // Newsletter-only subscribe (no password)
+    subscribe: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        firstName: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { subscribeEmail } = await import("./subscriberAuth");
+        const { sendWelcomeEmail } = await import("./emailService");
+        const result = await subscribeEmail(input);
+        if (!result.alreadySubscribed) {
+          sendWelcomeEmail({ email: result.email, firstName: input.firstName }).catch(console.error);
+        }
+        return {
+          success: true,
+          message: result.alreadySubscribed
+            ? "You're already subscribed!"
+            : "Successfully subscribed! Check your email for a welcome message.",
         };
       }),
   }),
