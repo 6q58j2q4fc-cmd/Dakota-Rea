@@ -50,6 +50,16 @@ export const subscribers = mysqlTable("subscribers", {
   /** Session token for subscriber auth */
   sessionToken: varchar("sessionToken", { length: 255 }),
   sessionExpiresAt: timestamp("sessionExpiresAt"),
+  /** Stripe customer ID for subscription billing */
+  stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
+  /** Stripe subscription ID */
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
+  /** Membership plan ID (insider, strategist) */
+  membershipPlan: varchar("membershipPlan", { length: 50 }),
+  /** Membership status */
+  membershipStatus: mysqlEnum("membershipStatus", ["active", "cancelled", "past_due", "trialing"]),
+  /** Membership period end */
+  membershipEndsAt: timestamp("membershipEndsAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

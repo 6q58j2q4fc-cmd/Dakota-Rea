@@ -17,6 +17,7 @@ import Orders from "./pages/Orders";
 import Blog from "./pages/Blog";
 import MemberPortal from "./pages/MemberPortal";
 import AdminDashboard from "./pages/AdminDashboard";
+import Membership from "./pages/Membership";
 import AlfredChat from "./components/AlfredChat";
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/members" component={MemberPortal} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/membership" component={Membership} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -109,6 +109,69 @@ async function startServer() {
         break;
       }
 
+      // Handle subscription checkout completion
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        if (session.mode === 'subscription' && session.metadata?.subscriber_id) {
+          const subscriberId = parseInt(session.metadata.subscriber_id);
+          const planId = session.metadata.plan_id;
+          const subscriptionId = typeof session.subscription === 'string'
+            ? session.subscription
+            : session.subscription?.id;
+
+          if (subscriptionId && planId) {
+            const db = await import('../db').then(m => m.getDb());
+            const { subscribers } = await import('../../drizzle/schema');
+            const { eq } = await import('drizzle-orm');
+            if (db) {
+              await db.update(subscribers)
+                .set({
+                  stripeSubscriptionId: subscriptionId,
+                  membershipPlan: planId,
+                  membershipStatus: 'active',
+                })
+                .where(eq(subscribers.id, subscriberId));
+              console.log(`[Webhook] Membership activated: subscriber ${subscriberId} -> ${planId}`);
+            }
+          }
+        }
+        break;
+      }
+
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription & { current_period_end: number };
+        const db = await import('../db').then(m => m.getDb());
+        const { subscribers } = await import('../../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        if (db) {
+          const status = subscription.status;
+          const validStatuses = ['active', 'cancelled', 'past_due', 'trialing'];
+          const membershipStatus = validStatuses.includes(status) ? status : 'cancelled';
+          await db.update(subscribers)
+            .set({
+              membershipStatus: membershipStatus as 'active' | 'cancelled' | 'past_due' | 'trialing',
+              membershipEndsAt: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+            })
+            .where(eq(subscribers.stripeSubscriptionId, subscription.id));
+          console.log(`[Webhook] Subscription updated: ${subscription.id} -> ${status}`);
+        }
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const db = await import('../db').then(m => m.getDb());
+        const { subscribers } = await import('../../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        if (db) {
+          await db.update(subscribers)
+            .set({ membershipStatus: 'cancelled' })
+            .where(eq(subscribers.stripeSubscriptionId, subscription.id));
+          console.log(`[Webhook] Subscription cancelled: ${subscription.id}`);
+        }
+        break;
+      }
+
       default:
         console.log(`[Webhook] Unhandled event type: ${event.type}`);
     }
@@ -131,6 +194,73 @@ async function startServer() {
       createContext,
     })
   );
+
+  // Dynamic sitemap.xml - includes all published blog posts
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const { getDb } = await import('../db');
+      const { blogPosts } = await import('../../drizzle/schema');
+      const { eq, desc } = await import('drizzle-orm');
+      const db = await getDb();
+
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+
+      // Static pages
+      const staticPages = [
+        { url: '/', priority: '1.0', changefreq: 'weekly' },
+        { url: '/about', priority: '0.9', changefreq: 'monthly' },
+        { url: '/speaking', priority: '0.8', changefreq: 'monthly' },
+        { url: '/consulting', priority: '0.8', changefreq: 'monthly' },
+        { url: '/books', priority: '0.8', changefreq: 'monthly' },
+        { url: '/foundation', priority: '0.7', changefreq: 'monthly' },
+        { url: '/blog', priority: '0.9', changefreq: 'daily' },
+        { url: '/ai-news', priority: '0.8', changefreq: 'daily' },
+        { url: '/membership', priority: '0.7', changefreq: 'monthly' },
+        { url: '/contact', priority: '0.6', changefreq: 'yearly' },
+        { url: '/press', priority: '0.6', changefreq: 'monthly' },
+      ];
+
+      // Dynamic blog posts
+      let blogEntries: string[] = [];
+      if (db) {
+        const posts = await db.select({
+          id: blogPosts.id,
+          slug: blogPosts.slug,
+          publishedAt: blogPosts.publishedAt,
+        })
+          .from(blogPosts)
+          .where(eq(blogPosts.isPublished, 1))
+          .orderBy(desc(blogPosts.publishedAt))
+          .limit(1000);
+
+        blogEntries = posts.map(post => {
+          const lastmod = post.publishedAt ? new Date(post.publishedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+          return `  <url>\n    <loc>${baseUrl}/blog/${post.slug || post.id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
+        });
+      }
+
+      const staticEntries = staticPages.map(page => {
+        const today = new Date().toISOString().split('T')[0];
+        return `  <url>\n    <loc>${baseUrl}${page.url}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`;
+      });
+
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...staticEntries, ...blogEntries].join('\n')}\n</urlset>`;
+
+      res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache 1 hour
+      res.send(xml);
+    } catch (err) {
+      console.error('[Sitemap] Error generating sitemap:', err);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
+  // robots.txt
+  app.get("/robots.txt", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    res.setHeader('Content-Type', 'text/plain');
+    res.send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nSitemap: ${baseUrl}/sitemap.xml\n`);
+  });
   
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {

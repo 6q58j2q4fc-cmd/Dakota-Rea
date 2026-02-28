@@ -5,7 +5,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Users, Calendar, BookOpen, Download, RefreshCw, CheckCircle, XCircle, Clock, Mail, Eye, EyeOff, Loader2, BarChart3 } from "lucide-react";
+import { Users, Calendar, BookOpen, Download, RefreshCw, CheckCircle, XCircle, Clock, Mail, Eye, EyeOff, Loader2, BarChart3, Send } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -18,6 +18,133 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocation } from "wouter";
+
+// Newsletter Broadcast Panel component
+function BroadcastPanel() {
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+  const [segment, setSegment] = useState<"all" | "verified" | "premium">("all");
+  const [lastResult, setLastResult] = useState<{ sent: number; message: string } | null>(null);
+
+  const { data: history, refetch: refetchHistory } = trpc.admin.getBroadcastHistory.useQuery();
+
+  const broadcastMutation = trpc.admin.broadcastNewsletter.useMutation({
+    onSuccess: (data) => {
+      toast.success(data.message);
+      setLastResult({ sent: data.sent, message: data.message });
+      setSubject("");
+      setBody("");
+      refetchHistory();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const handleSend = () => {
+    if (!subject.trim() || !body.trim()) {
+      toast.error("Subject and body are required");
+      return;
+    }
+    if (!confirm(`Send this newsletter to ${segment === 'all' ? 'all' : segment} subscribers?`)) return;
+    broadcastMutation.mutate({ subject, body, targetSegment: segment });
+  };
+
+  return (
+    <div className="grid lg:grid-cols-2 gap-6">
+      {/* Compose */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Send size={18} style={{ color: "oklch(0.72 0.14 85)" }} />
+            Compose Newsletter
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: "oklch(0.35 0.02 250)" }}>Audience Segment</label>
+            <Select value={segment} onValueChange={(v) => setSegment(v as "all" | "verified" | "premium")}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Active Subscribers</SelectItem>
+                <SelectItem value="verified">Verified Subscribers Only</SelectItem>
+                <SelectItem value="premium">Premium Members Only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: "oklch(0.35 0.02 250)" }}>Subject Line</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="e.g., This Week in AI Ethics"
+              className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2"
+              style={{ borderColor: "oklch(0.85 0.01 90)", color: "oklch(0.15 0.03 250)" }}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: "oklch(0.35 0.02 250)" }}>Email Body</label>
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Write your newsletter content here... Markdown is supported."
+              rows={10}
+              className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 resize-y"
+              style={{ borderColor: "oklch(0.85 0.01 90)", color: "oklch(0.15 0.03 250)" }}
+            />
+          </div>
+          {lastResult && (
+            <div className="p-3 rounded-lg text-sm" style={{ backgroundColor: "oklch(0.95 0.05 140 / 0.3)", color: "oklch(0.3 0.1 140)" }}>
+              ✓ {lastResult.message}
+            </div>
+          )}
+          <Button
+            onClick={handleSend}
+            disabled={broadcastMutation.isPending || !subject.trim() || !body.trim()}
+            className="w-full"
+            style={{ backgroundColor: "oklch(0.15 0.03 250)", color: "oklch(0.97 0.01 90)" }}
+          >
+            {broadcastMutation.isPending ? (
+              <><Loader2 size={14} className="mr-2 animate-spin" /> Sending...</>
+            ) : (
+              <><Send size={14} className="mr-2" /> Send Newsletter</>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* History */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail size={18} style={{ color: "oklch(0.72 0.14 85)" }} />
+            Broadcast History
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!history || history.length === 0 ? (
+            <p className="text-sm text-gray-500 text-center py-8">No broadcasts sent yet</p>
+          ) : (
+            <div className="space-y-3">
+              {history.map((item, i) => (
+                <div key={i} className="flex items-start justify-between p-3 rounded-lg border" style={{ borderColor: "oklch(0.90 0.01 90)" }}>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate" style={{ color: "oklch(0.15 0.03 250)" }}>{item.subject}</p>
+                    <p className="text-xs mt-1" style={{ color: "oklch(0.55 0.02 250)" }}>
+                      {new Date(item.sentAt).toLocaleDateString()} · {item.count} recipients
+                    </p>
+                  </div>
+                  <Badge className="ml-3 text-xs bg-green-100 text-green-700 flex-shrink-0">Sent</Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, loading } = useAuth();
@@ -198,6 +325,9 @@ export default function AdminDashboard() {
               </TabsTrigger>
               <TabsTrigger value="blog">
                 <BookOpen size={16} className="mr-2" /> Blog Posts
+              </TabsTrigger>
+              <TabsTrigger value="broadcast">
+                <Send size={16} className="mr-2" /> Broadcast
               </TabsTrigger>
             </TabsList>
 
@@ -487,6 +617,11 @@ export default function AdminDashboard() {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Newsletter Broadcast Tab */}
+            <TabsContent value="broadcast">
+              <BroadcastPanel />
             </TabsContent>
           </Tabs>
         </div>

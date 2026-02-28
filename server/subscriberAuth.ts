@@ -159,6 +159,11 @@ export async function verifySubscriberSession(sessionToken: string) {
     lastName: sub.lastName,
     isVerified: sub.isVerified,
     tags: sub.tags,
+    stripeCustomerId: sub.stripeCustomerId,
+    stripeSubscriptionId: sub.stripeSubscriptionId,
+    membershipPlan: sub.membershipPlan,
+    membershipStatus: sub.membershipStatus,
+    membershipEndsAt: sub.membershipEndsAt,
   };
 }
 

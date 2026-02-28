@@ -22,6 +22,7 @@ const navLinks = [
   { href: "/blog", label: "Blog" },
   { href: "/foundation", label: "Foundation" },
   { href: "/members", label: "Members" },
+  { href: "/membership", label: "Premium" },
 ];
 
 export default function Navigation() {

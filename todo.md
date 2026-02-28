@@ -53,3 +53,7 @@
 - [x] Build admin subscriber dashboard at /admin/subscribers
 - [x] Add member-only gated content for premium blog articles
 - [x] Push all latest changes to GitHub repository
+- [x] Add Stripe premium membership tiers ($9/mo, $29/mo) with subscription billing
+- [x] Gate premium blog content behind paid membership
+- [x] Build newsletter broadcast tool in Admin Dashboard
+- [x] Auto-generate /sitemap.xml with all published blog posts for SEO

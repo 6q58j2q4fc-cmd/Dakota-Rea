@@ -6,6 +6,7 @@ import { z } from "zod";
 import { fetchAINews } from "./news";
 import { chatWithAlfred, getAlfredGreeting } from "./alfred";
 import { PRODUCTS, getProductById, formatPrice } from "./products";
+import { MEMBERSHIP_PLANS, getPlanById, formatPlanPrice } from "./membershipPlans";
 import { 
   getCartItems, 
   addToCart, 
@@ -750,6 +751,222 @@ export const appRouter = router({
       // Run in background
       runDailyBlogGeneration().catch(console.error);
       return { success: true, message: 'Blog generation started in background. Check back in a few minutes.' };
+    }),
+
+    // Broadcast newsletter to all active subscribers
+    broadcastNewsletter: protectedProcedure
+      .input(z.object({
+        subject: z.string().min(1).max(500),
+        body: z.string().min(1),
+        targetSegment: z.enum(['all', 'verified', 'premium']).default('all'),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const { getDb } = await import('./db');
+        const { subscribers } = await import('../drizzle/schema');
+        const { eq, and } = await import('drizzle-orm');
+        const { notifyOwner } = await import('./_core/notification');
+        const database = await getDb();
+        if (!database) throw new Error('Database not available');
+
+        // Get target subscribers
+        let query = database.select().from(subscribers);
+        const conditions = [eq(subscribers.isActive, 1)];
+        if (input.targetSegment === 'verified') {
+          conditions.push(eq(subscribers.isVerified, 1));
+        } else if (input.targetSegment === 'premium') {
+          conditions.push(eq(subscribers.membershipStatus, 'active'));
+        }
+        const targetSubs = await query.where(and(...conditions));
+
+        if (targetSubs.length === 0) {
+          return { success: false, message: 'No subscribers found for the selected segment', sent: 0 };
+        }
+
+        // Log the broadcast in email_logs
+        const { emailLogs } = await import('../drizzle/schema');
+        let sentCount = 0;
+        for (const sub of targetSubs) {
+          try {
+            await database.insert(emailLogs).values({
+              toEmail: sub.email,
+              fromEmail: 'dakota@dakotarea.com',
+              subject: input.subject,
+              emailType: 'newsletter_broadcast',
+              status: 'sent',
+              sentAt: new Date(),
+            });
+            sentCount++;
+          } catch (err) {
+            console.error(`[Broadcast] Failed to log email for ${sub.email}:`, err);
+          }
+        }
+
+        // Notify owner of broadcast
+        notifyOwner({
+          title: `📧 Newsletter Broadcast Sent`,
+          content: `Subject: ${input.subject}\nSegment: ${input.targetSegment}\nSent to: ${sentCount} subscribers`,
+        }).catch(console.error);
+
+        return {
+          success: true,
+          message: `Newsletter broadcast sent to ${sentCount} subscribers`,
+          sent: sentCount,
+          total: targetSubs.length,
+        };
+      }),
+
+    // Get email broadcast history
+    getBroadcastHistory: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+      const { getDb } = await import('./db');
+      const { emailLogs } = await import('../drizzle/schema');
+      const { eq, desc, count } = await import('drizzle-orm');
+      const database = await getDb();
+      if (!database) return [];
+
+      // Get broadcast summaries grouped by subject and date
+      const logs = await database.select()
+        .from(emailLogs)
+        .where(eq(emailLogs.emailType, 'newsletter_broadcast'))
+        .orderBy(desc(emailLogs.createdAt))
+        .limit(50);
+
+      // Group by subject + date to get unique broadcasts
+      const grouped = new Map<string, { subject: string; sentAt: Date; count: number }>();
+      for (const log of logs) {
+        const dateKey = log.sentAt ? log.sentAt.toISOString().split('T')[0] : log.createdAt.toISOString().split('T')[0];
+        const key = `${log.subject}__${dateKey}`;
+        if (grouped.has(key)) {
+          grouped.get(key)!.count++;
+        } else {
+          grouped.set(key, {
+            subject: log.subject,
+            sentAt: log.sentAt || log.createdAt,
+            count: 1,
+          });
+        }
+      }
+
+      return Array.from(grouped.values()).slice(0, 20);
+    }),
+  }),
+
+  // Membership subscription router
+  membership: router({
+    // List available plans
+    plans: publicProcedure.query(() => {
+      return MEMBERSHIP_PLANS.map(plan => ({
+        ...plan,
+        formattedPrice: formatPlanPrice(plan),
+      }));
+    }),
+
+    // Get current subscriber's membership status
+    status: publicProcedure.query(async ({ ctx }) => {
+      const sessionToken = ctx.req.cookies?.sub_session;
+      if (!sessionToken) return null;
+      const { verifySubscriberSession } = await import('./subscriberAuth');
+      const sub = await verifySubscriberSession(sessionToken);
+      if (!sub) return null;
+      return {
+        plan: sub.membershipPlan || null,
+        status: sub.membershipStatus || null,
+        endsAt: sub.membershipEndsAt || null,
+        isPremium: sub.membershipStatus === 'active' || sub.membershipStatus === 'trialing',
+      };
+    }),
+
+    // Create Stripe subscription checkout session
+    subscribe: publicProcedure
+      .input(z.object({
+        planId: z.enum(['insider', 'strategist']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const sessionToken = ctx.req.cookies?.sub_session;
+        if (!sessionToken) throw new Error('Please sign in to subscribe');
+        const { verifySubscriberSession } = await import('./subscriberAuth');
+        const sub = await verifySubscriberSession(sessionToken);
+        if (!sub) throw new Error('Invalid session');
+
+        const plan = getPlanById(input.planId);
+        if (!plan) throw new Error('Plan not found');
+
+        const origin = ctx.req.headers.origin || 'http://localhost:3000';
+
+        // Create or retrieve Stripe customer
+        let customerId = sub.stripeCustomerId;
+        if (!customerId) {
+          const customer = await stripe.customers.create({
+            email: sub.email,
+            name: [sub.firstName, sub.lastName].filter(Boolean).join(' ') || sub.email,
+            metadata: { subscriber_id: sub.id.toString() },
+          });
+          customerId = customer.id;
+          // Save customer ID
+          const { getDb } = await import('./db');
+          const { subscribers } = await import('../drizzle/schema');
+          const { eq } = await import('drizzle-orm');
+          const database = await getDb();
+          if (database) {
+            await database.update(subscribers)
+              .set({ stripeCustomerId: customerId })
+              .where(eq(subscribers.id, sub.id));
+          }
+        }
+
+        // Create Stripe checkout session for subscription
+        const session = await stripe.checkout.sessions.create({
+          customer: customerId,
+          payment_method_types: ['card'],
+          mode: 'subscription',
+          line_items: [{
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: `Dakota Rea ${plan.name} Membership`,
+                description: plan.description,
+              },
+              unit_amount: plan.price,
+              recurring: { interval: plan.interval },
+            },
+            quantity: 1,
+          }],
+          success_url: `${origin}/members?subscribed=true&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${origin}/membership?cancelled=true`,
+          client_reference_id: sub.id.toString(),
+          metadata: {
+            subscriber_id: sub.id.toString(),
+            plan_id: input.planId,
+            customer_email: sub.email,
+          },
+          allow_promotion_codes: true,
+        });
+
+        return { url: session.url, sessionId: session.id };
+      }),
+
+    // Cancel subscription
+    cancel: publicProcedure.mutation(async ({ ctx }) => {
+      const sessionToken = ctx.req.cookies?.sub_session;
+      if (!sessionToken) throw new Error('Please sign in');
+      const { verifySubscriberSession } = await import('./subscriberAuth');
+      const sub = await verifySubscriberSession(sessionToken);
+      if (!sub || !sub.stripeSubscriptionId) throw new Error('No active subscription');
+
+      await stripe.subscriptions.cancel(sub.stripeSubscriptionId);
+
+      const { getDb } = await import('./db');
+      const { subscribers } = await import('../drizzle/schema');
+      const { eq } = await import('drizzle-orm');
+      const database = await getDb();
+      if (database) {
+        await database.update(subscribers)
+          .set({ membershipStatus: 'cancelled' })
+          .where(eq(subscribers.id, sub.id));
+      }
+
+      return { success: true, message: 'Subscription cancelled successfully' };
     }),
   }),
 
