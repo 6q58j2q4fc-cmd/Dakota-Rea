@@ -570,6 +570,189 @@ export const appRouter = router({
       }),
   }),
 
+  // Admin router - protected by admin role check
+  admin: router({
+    // Get all subscribers with stats
+    getSubscribers: protectedProcedure
+      .input(z.object({
+        page: z.number().default(1),
+        limit: z.number().default(50),
+        search: z.string().optional(),
+        tag: z.string().optional(),
+        isVerified: z.boolean().optional(),
+        isActive: z.boolean().optional(),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const { getDb } = await import('./db');
+        const { subscribers } = await import('../drizzle/schema');
+        const { eq, like, and, desc, count, sql } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) return { subscribers: [], total: 0, stats: { total: 0, verified: 0, active: 0, withPassword: 0 } };
+        
+        const page = input?.page || 1;
+        const limit = input?.limit || 50;
+        const offset = (page - 1) * limit;
+        
+        const allSubs = await database.select().from(subscribers)
+          .orderBy(desc(subscribers.createdAt))
+          .limit(limit)
+          .offset(offset);
+        
+        const totalResult = await database.select({ count: count() }).from(subscribers);
+        const total = totalResult[0]?.count || 0;
+        
+        const statsResult = await database.select({
+          total: count(),
+          verified: sql<number>`SUM(CASE WHEN is_verified = 1 THEN 1 ELSE 0 END)`,
+          active: sql<number>`SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END)`,
+          withPassword: sql<number>`SUM(CASE WHEN password_hash IS NOT NULL THEN 1 ELSE 0 END)`,
+        }).from(subscribers);
+        
+        return {
+          subscribers: allSubs.map(s => ({
+            id: s.id,
+            email: s.email,
+            firstName: s.firstName,
+            lastName: s.lastName,
+            isVerified: s.isVerified === 1,
+            isActive: s.isActive === 1,
+            isMember: !!s.passwordHash,
+            tags: (s.tags as string[]) || [],
+            lastLoginAt: s.lastLoginAt,
+            createdAt: s.createdAt,
+          })),
+          total: Number(total),
+          stats: {
+            total: Number(statsResult[0]?.total || 0),
+            verified: Number(statsResult[0]?.verified || 0),
+            active: Number(statsResult[0]?.active || 0),
+            withPassword: Number(statsResult[0]?.withPassword || 0),
+          },
+        };
+      }),
+
+    // Get all bookings
+    getBookings: protectedProcedure
+      .input(z.object({
+        status: z.enum(['pending', 'confirmed', 'declined', 'cancelled']).optional(),
+        page: z.number().default(1),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const { getDb } = await import('./db');
+        const { bookingRequests } = await import('../drizzle/schema');
+        const { desc, eq, and } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) return { bookings: [], total: 0 };
+        
+        const bookings = await database.select().from(bookingRequests)
+          .orderBy(desc(bookingRequests.createdAt))
+          .limit(50);
+        
+        return { bookings, total: bookings.length };
+      }),
+
+    // Update booking status
+    updateBookingStatus: protectedProcedure
+      .input(z.object({
+        bookingId: z.number(),
+        status: z.enum(['pending', 'confirmed', 'declined', 'cancelled']),
+        adminNotes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const { getDb } = await import('./db');
+        const { bookingRequests } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) throw new Error('Database not available');
+        
+        await database.update(bookingRequests)
+          .set({ status: input.status, adminNotes: input.adminNotes })
+          .where(eq(bookingRequests.id, input.bookingId));
+        
+        return { success: true };
+      }),
+
+    // Export subscribers as CSV data
+    exportSubscribers: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+      const { getDb } = await import('./db');
+      const { subscribers } = await import('../drizzle/schema');
+      const { desc } = await import('drizzle-orm');
+      const database = await getDb();
+      if (!database) return { csv: '' };
+      
+      const allSubs = await database.select().from(subscribers).orderBy(desc(subscribers.createdAt));
+      
+      const headers = ['ID', 'Email', 'First Name', 'Last Name', 'Verified', 'Active', 'Member', 'Tags', 'Joined'];
+      const rows = allSubs.map(s => [
+        s.id,
+        s.email,
+        s.firstName || '',
+        s.lastName || '',
+        s.isVerified ? 'Yes' : 'No',
+        s.isActive ? 'Yes' : 'No',
+        s.passwordHash ? 'Yes' : 'No',
+        ((s.tags as string[]) || []).join('; '),
+        new Date(s.createdAt).toISOString().split('T')[0],
+      ]);
+      
+      const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+      return { csv, count: allSubs.length };
+    }),
+
+    // Deactivate a subscriber
+    deactivateSubscriber: protectedProcedure
+      .input(z.object({ subscriberId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const { getDb } = await import('./db');
+        const { subscribers } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) throw new Error('Database not available');
+        await database.update(subscribers).set({ isActive: 0 }).where(eq(subscribers.id, input.subscriberId));
+        return { success: true };
+      }),
+
+    // Get blog posts for admin management
+    getBlogPosts: protectedProcedure
+      .input(z.object({ page: z.number().default(1) }).optional())
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const posts = await getBlogPosts();
+        const page = input?.page || 1;
+        const offset = (page - 1) * 20;
+        const pagedPosts = posts.slice(offset, offset + 20);
+        return { posts: pagedPosts, total: posts.length };
+      }),
+
+    // Toggle blog post published status
+    toggleBlogPost: protectedProcedure
+      .input(z.object({ postId: z.number(), isPublished: z.boolean() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const { getDb } = await import('./db');
+        const { blogPosts } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) throw new Error('Database not available');
+        await database.update(blogPosts).set({ isPublished: input.isPublished ? 1 : 0 }).where(eq(blogPosts.id, input.postId));
+        return { success: true };
+      }),
+
+    // Manually trigger blog generation
+    triggerBlogGeneration: protectedProcedure.mutation(async ({ ctx }) => {
+      if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+      const { runDailyBlogGeneration } = await import('./blogScheduler');
+      // Run in background
+      runDailyBlogGeneration().catch(console.error);
+      return { success: true, message: 'Blog generation started in background. Check back in a few minutes.' };
+    }),
+  }),
+
   // Orders router
   orders: router({
     list: protectedProcedure.query(async ({ ctx }) => {

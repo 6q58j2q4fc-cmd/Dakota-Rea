@@ -50,3 +50,6 @@
 - [x] Email autoresponder for newsletter subscribers
 - [x] Email autoresponder for booking requests
 - [ ] Push updated files to GitHub (pending)
+- [x] Build admin subscriber dashboard at /admin/subscribers
+- [x] Add member-only gated content for premium blog articles
+- [x] Push all latest changes to GitHub repository

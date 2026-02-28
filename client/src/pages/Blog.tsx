@@ -17,12 +17,22 @@ import {
   Globe,
   Loader2,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  Lock
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { trpc } from "@/lib/trpc";
 import { Streamdown } from "streamdown";
+
+// Helper: every 3rd article (index 2, 5, 8...) is premium/member-only
+const isPremiumPost = (index: number) => (index + 1) % 3 === 0;
+
+// Check if user is a logged-in member via subscriber session
+const useSubscriberSession = () => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('subscriber_session') : null;
+  return { isMember: !!token };
+};
 
 const categories = [
   { id: "all", name: "All Articles", icon: BookOpen },
@@ -41,6 +51,8 @@ export default function Blog() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch blog posts
+  const { isMember } = useSubscriberSession();
+
   const { data: posts, isLoading, refetch, isRefetching } = trpc.blog.list.useQuery({
     category: selectedCategory === "all" ? undefined : selectedCategory,
   });
@@ -297,11 +309,26 @@ export default function Blog() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  onClick={() => setSelectedPost(post.id)}
-                  className="bg-white rounded-xl overflow-hidden cursor-pointer transition-all hover:shadow-lg"
+                  onClick={() => {
+                    if (isPremiumPost(index) && !isMember) return;
+                    setSelectedPost(post.id);
+                  }}
+                  className={`bg-white rounded-xl overflow-hidden transition-all hover:shadow-lg relative ${
+                    isPremiumPost(index) && !isMember ? 'cursor-default' : 'cursor-pointer'
+                  }`}
                   style={{ border: "1px solid oklch(0.90 0.01 90)" }}
                 >
-                  <div className="p-6">
+                  {/* Premium badge */}
+                  {isPremiumPost(index) && (
+                    <div
+                      className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
+                      style={{ backgroundColor: "oklch(0.72 0.14 85)", color: "oklch(0.15 0.03 250)" }}
+                    >
+                      <Lock size={10} />
+                      Members Only
+                    </div>
+                  )}
+                  <div className={`p-6 ${isPremiumPost(index) && !isMember ? 'opacity-75' : ''}`}>
                     <span 
                       className="inline-block px-3 py-1 text-xs font-semibold tracking-wider uppercase rounded-full mb-4"
                       style={{ backgroundColor: "oklch(0.72 0.14 85 / 0.1)", color: "oklch(0.72 0.14 85)" }}
@@ -327,6 +354,26 @@ export default function Blog() {
                         {post.readTime} min
                       </span>
                     </div>
+                    {/* Paywall overlay for premium posts */}
+                    {isPremiumPost(index) && !isMember && (
+                      <div
+                        className="mt-4 p-4 rounded-lg text-center"
+                        style={{ backgroundColor: "oklch(0.15 0.03 250 / 0.05)", border: "1px dashed oklch(0.72 0.14 85 / 0.4)" }}
+                      >
+                        <Lock size={16} className="mx-auto mb-2" style={{ color: "oklch(0.72 0.14 85)" }} />
+                        <p className="text-xs font-medium mb-2" style={{ color: "oklch(0.35 0.02 250)" }}>
+                          Members-only content
+                        </p>
+                        <Link href="/members">
+                          <span
+                            className="text-xs font-semibold underline cursor-pointer"
+                            style={{ color: "oklch(0.72 0.14 85)" }}
+                          >
+                            Join free to read →
+                          </span>
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </motion.article>
               ))}
