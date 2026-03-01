@@ -57,3 +57,8 @@
 - [x] Gate premium blog content behind paid membership
 - [x] Build newsletter broadcast tool in Admin Dashboard
 - [x] Auto-generate /sitemap.xml with all published blog posts for SEO
+- [x] Build Strategist Q&A session booking flow with monthly credit system
+- [x] Add Q&A session table to database schema
+- [x] Build backend routes for Q&A booking (create, list, cancel)
+- [x] Build Strategist member dashboard with Q&A booking calendar UI
+- [x] Send email notifications for Q&A booking confirmations

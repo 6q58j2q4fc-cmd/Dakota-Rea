@@ -573,3 +573,158 @@ export async function sendPasswordResetEmail(subscriber: {
     referenceType: "subscriber",
   });
 }
+
+/**
+ * Send Q&A session booking confirmation to Strategist member
+ */
+export async function sendQaBookingConfirmation(data: {
+  email: string;
+  name: string;
+  date: string;
+  time: string;
+  topic: string;
+}): Promise<boolean> {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Q&A Session Booked</title>
+  <style>
+    body { font-family: Georgia, serif; background: #f9f7f4; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: white; }
+    .header { background: #1a1a2e; padding: 40px; text-align: center; }
+    .header h1 { color: #c9a84c; font-size: 26px; margin: 0; letter-spacing: 2px; }
+    .header p { color: rgba(255,255,255,0.7); margin: 8px 0 0; font-size: 14px; }
+    .body { padding: 40px; }
+    .body h2 { color: #1a1a2e; font-size: 22px; margin-bottom: 16px; }
+    .body p { color: #444; line-height: 1.7; margin-bottom: 16px; }
+    .detail-card { background: #f9f7f4; border-left: 4px solid #c9a84c; padding: 20px 24px; margin: 24px 0; }
+    .detail-card p { margin: 6px 0; color: #333; font-size: 15px; }
+    .detail-card .label { font-weight: bold; color: #1a1a2e; }
+    .badge { display: inline-block; background: #c9a84c; color: #1a1a2e; padding: 4px 12px; font-size: 12px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+    .footer { background: #f5f5f0; padding: 24px 40px; text-align: center; }
+    .footer p { color: #888; font-size: 12px; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>DAKOTA REA</h1>
+      <p>Strategist Member Q&A Session</p>
+    </div>
+    <div class="body">
+      <div class="badge">Session Requested</div>
+      <h2>Your Q&A Session is Booked, ${data.name}!</h2>
+      <p>Thank you for scheduling your monthly Strategist Q&A session. Dakota will review your request and send you a confirmed meeting link within 24 hours.</p>
+      
+      <div class="detail-card">
+        <p><span class="label">Date:</span> ${data.date}</p>
+        <p><span class="label">Time:</span> ${data.time}</p>
+        <p><span class="label">Topic:</span> ${data.topic}</p>
+        <p><span class="label">Format:</span> 1:1 Video Call (30 minutes)</p>
+      </div>
+      
+      <p>What to expect next:</p>
+      <ul>
+        <li>You will receive a confirmation email with the meeting link once Dakota approves the session</li>
+        <li>Please prepare any specific questions or materials in advance</li>
+        <li>Sessions are 30 minutes — come ready to dive deep</li>
+      </ul>
+      
+      <p>If you need to reschedule or have any questions, reply to this email.</p>
+    </div>
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} Dakota Rea · Strategist Membership · <a href="https://dakotarea.com/members">Manage Membership</a></p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+
+  return sendEmail({
+    to: data.email,
+    subject: `Q&A Session Booked: ${data.date} at ${data.time}`,
+    html,
+    emailType: "qa_booking_confirmation",
+    referenceType: "qa_session",
+  });
+}
+
+/**
+ * Send Q&A session confirmed email with meeting link to Strategist member
+ */
+export async function sendQaConfirmedEmail(data: {
+  email: string;
+  name: string;
+  date: string;
+  time: string;
+  meetingLink: string;
+}): Promise<boolean> {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Q&A Session Confirmed</title>
+  <style>
+    body { font-family: Georgia, serif; background: #f9f7f4; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: white; }
+    .header { background: #1a1a2e; padding: 40px; text-align: center; }
+    .header h1 { color: #c9a84c; font-size: 26px; margin: 0; letter-spacing: 2px; }
+    .header p { color: rgba(255,255,255,0.7); margin: 8px 0 0; font-size: 14px; }
+    .body { padding: 40px; }
+    .body h2 { color: #1a1a2e; font-size: 22px; margin-bottom: 16px; }
+    .body p { color: #444; line-height: 1.7; margin-bottom: 16px; }
+    .detail-card { background: #f9f7f4; border-left: 4px solid #c9a84c; padding: 20px 24px; margin: 24px 0; }
+    .detail-card p { margin: 6px 0; color: #333; font-size: 15px; }
+    .detail-card .label { font-weight: bold; color: #1a1a2e; }
+    .cta { display: block; background: #c9a84c; color: #1a1a2e; text-decoration: none; padding: 16px 32px; text-align: center; font-weight: bold; font-size: 15px; letter-spacing: 1px; text-transform: uppercase; margin: 28px 0; }
+    .badge { display: inline-block; background: #2d7a4f; color: white; padding: 4px 12px; font-size: 12px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+    .footer { background: #f5f5f0; padding: 24px 40px; text-align: center; }
+    .footer p { color: #888; font-size: 12px; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>DAKOTA REA</h1>
+      <p>Strategist Member Q&A Session — Confirmed</p>
+    </div>
+    <div class="body">
+      <div class="badge">✓ Confirmed</div>
+      <h2>Your Session is Confirmed, ${data.name}!</h2>
+      <p>Dakota has confirmed your monthly Q&A session. Click the button below to join at the scheduled time.</p>
+      
+      <div class="detail-card">
+        <p><span class="label">Date:</span> ${data.date}</p>
+        <p><span class="label">Time:</span> ${data.time}</p>
+        <p><span class="label">Format:</span> 1:1 Video Call (30 minutes)</p>
+        <p><span class="label">Meeting Link:</span> <a href="${data.meetingLink}">${data.meetingLink}</a></p>
+      </div>
+      
+      <a href="${data.meetingLink}" class="cta">Join Meeting</a>
+      
+      <p>Tips for a great session:</p>
+      <ul>
+        <li>Test your audio and video 5 minutes before the call</li>
+        <li>Have your questions or agenda ready</li>
+        <li>Take notes — these sessions are packed with value</li>
+      </ul>
+    </div>
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} Dakota Rea · Strategist Membership · <a href="https://dakotarea.com/members">Manage Membership</a></p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+
+  return sendEmail({
+    to: data.email,
+    subject: `✓ Q&A Session Confirmed: ${data.date} at ${data.time} — Meeting Link Inside`,
+    html,
+    emailType: "qa_confirmed",
+    referenceType: "qa_session",
+  });
+}

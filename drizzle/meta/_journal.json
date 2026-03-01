@@ -43,6 +43,13 @@
       "when": 1772320801645,
       "tag": "0005_mysterious_star_brand",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1772363366396,
+      "tag": "0006_wild_manta",
+      "breakpoints": true
     }
   ]
 }

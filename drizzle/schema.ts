@@ -210,3 +210,36 @@ export const bookingRequests = mysqlTable("booking_requests", {
 
 export type BookingRequest = typeof bookingRequests.$inferSelect;
 export type InsertBookingRequest = typeof bookingRequests.$inferInsert;
+
+/**
+ * Q&A Sessions table for Strategist member monthly 1:1 calls
+ */
+export const qaSessions = mysqlTable("qa_sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Subscriber ID (must be Strategist member) */
+  subscriberId: int("subscriberId").notNull(),
+  /** Subscriber email (denormalized for easy lookup) */
+  email: varchar("email", { length: 320 }).notNull(),
+  /** Subscriber name */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** Requested date for the session */
+  requestedDate: timestamp("requestedDate").notNull(),
+  /** Requested time slot (e.g. "10:00") */
+  requestedTime: varchar("requestedTime", { length: 10 }).notNull(),
+  /** Topic / agenda for the session */
+  topic: text("topic"),
+  /** Questions to discuss */
+  questions: text("questions"),
+  /** Session status */
+  status: mysqlEnum("status", ["pending", "confirmed", "completed", "cancelled"]).default("pending").notNull(),
+  /** Month credit used (YYYY-MM format) */
+  creditMonth: varchar("creditMonth", { length: 7 }).notNull(),
+  /** Admin notes / meeting link */
+  meetingLink: text("meetingLink"),
+  adminNotes: text("adminNotes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type QaSession = typeof qaSessions.$inferSelect;
+export type InsertQaSession = typeof qaSessions.$inferInsert;

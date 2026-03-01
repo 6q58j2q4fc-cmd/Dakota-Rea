@@ -970,6 +970,198 @@ export const appRouter = router({
     }),
   }),
 
+  // Q&A Sessions router - Strategist member monthly 1:1 calls
+  qa: router({
+    // Book a Q&A session (Strategist members only)
+    book: publicProcedure
+      .input(z.object({
+        date: z.string(), // ISO date string
+        time: z.string(),
+        topic: z.string().min(5).max(500),
+        questions: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const sessionToken = ctx.req.cookies?.sub_session;
+        if (!sessionToken) throw new Error('Please sign in to book a Q&A session');
+        const { verifySubscriberSession } = await import('./subscriberAuth');
+        const sub = await verifySubscriberSession(sessionToken);
+        if (!sub) throw new Error('Invalid session');
+        if (sub.membershipPlan !== 'strategist' || sub.membershipStatus !== 'active') {
+          throw new Error('Q&A sessions are available to Strategist members only');
+        }
+
+        const { getDb } = await import('./db');
+        const { qaSessions } = await import('../drizzle/schema');
+        const { eq, and } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) throw new Error('Database not available');
+
+        // Check if subscriber already used their credit this month
+        const creditMonth = new Date(input.date).toISOString().slice(0, 7); // YYYY-MM
+        const existing = await database.select()
+          .from(qaSessions)
+          .where(and(
+            eq(qaSessions.subscriberId, sub.id),
+            eq(qaSessions.creditMonth, creditMonth),
+          ));
+
+        const activeSession = existing.find(s => s.status !== 'cancelled');
+        if (activeSession) {
+          throw new Error(`You have already booked a Q&A session for ${creditMonth}. Each Strategist membership includes one session per month.`);
+        }
+
+        const requestedDate = new Date(input.date);
+        const name = [sub.firstName, sub.lastName].filter(Boolean).join(' ') || sub.email;
+
+        const [session] = await database.insert(qaSessions).values({
+          subscriberId: sub.id,
+          email: sub.email,
+          name,
+          requestedDate,
+          requestedTime: input.time,
+          topic: input.topic,
+          questions: input.questions,
+          creditMonth,
+          status: 'pending',
+        }).$returningId();
+
+        // Send confirmation email to member
+        const { sendQaBookingConfirmation } = await import('./emailService');
+        sendQaBookingConfirmation({
+          email: sub.email,
+          name,
+          date: requestedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+          time: input.time,
+          topic: input.topic,
+        }).catch(console.error);
+
+        // Notify owner
+        const { notifyOwner } = await import('./_core/notification');
+        notifyOwner({
+          title: `🎙️ New Q&A Session Request: ${name}`,
+          content: `Member: ${name} (${sub.email})\nDate: ${requestedDate.toLocaleDateString()}\nTime: ${input.time}\nTopic: ${input.topic}${input.questions ? `\nQuestions: ${input.questions}` : ''}`,
+        }).catch(console.error);
+
+        return { success: true, sessionId: session.id, message: 'Q&A session booked! You will receive a confirmation email with the meeting link.' };
+      }),
+
+    // Get current subscriber's Q&A sessions
+    mySessions: publicProcedure.query(async ({ ctx }) => {
+      const sessionToken = ctx.req.cookies?.sub_session;
+      if (!sessionToken) return [];
+      const { verifySubscriberSession } = await import('./subscriberAuth');
+      const sub = await verifySubscriberSession(sessionToken);
+      if (!sub) return [];
+
+      const { getDb } = await import('./db');
+      const { qaSessions } = await import('../drizzle/schema');
+      const { eq, desc } = await import('drizzle-orm');
+      const database = await getDb();
+      if (!database) return [];
+
+      return database.select().from(qaSessions)
+        .where(eq(qaSessions.subscriberId, sub.id))
+        .orderBy(desc(qaSessions.requestedDate));
+    }),
+
+    // Check if subscriber has used their monthly credit
+    creditStatus: publicProcedure.query(async ({ ctx }) => {
+      const sessionToken = ctx.req.cookies?.sub_session;
+      if (!sessionToken) return { hasCredit: false, isStrategist: false };
+      const { verifySubscriberSession } = await import('./subscriberAuth');
+      const sub = await verifySubscriberSession(sessionToken);
+      if (!sub) return { hasCredit: false, isStrategist: false };
+
+      const isStrategist = sub.membershipPlan === 'strategist' && sub.membershipStatus === 'active';
+      if (!isStrategist) return { hasCredit: false, isStrategist: false };
+
+      const { getDb } = await import('./db');
+      const { qaSessions } = await import('../drizzle/schema');
+      const { eq, and } = await import('drizzle-orm');
+      const database = await getDb();
+      if (!database) return { hasCredit: true, isStrategist: true };
+
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const existing = await database.select().from(qaSessions)
+        .where(and(
+          eq(qaSessions.subscriberId, sub.id),
+          eq(qaSessions.creditMonth, currentMonth),
+        ));
+
+      const usedCredit = existing.some(s => s.status !== 'cancelled');
+      return {
+        hasCredit: !usedCredit,
+        isStrategist: true,
+        currentMonth,
+        existingSession: usedCredit ? existing.find(s => s.status !== 'cancelled') : null,
+      };
+    }),
+
+    // Admin: list all Q&A sessions
+    adminList: protectedProcedure
+      .input(z.object({
+        status: z.enum(['pending', 'confirmed', 'completed', 'cancelled']).optional(),
+        page: z.number().default(1),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const { getDb } = await import('./db');
+        const { qaSessions } = await import('../drizzle/schema');
+        const { desc, eq } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) return { sessions: [], total: 0 };
+
+        const page = input?.page || 1;
+        const sessions = await database.select().from(qaSessions)
+          .orderBy(desc(qaSessions.requestedDate))
+          .limit(20)
+          .offset((page - 1) * 20);
+
+        return { sessions, total: sessions.length };
+      }),
+
+    // Admin: update Q&A session (confirm, add meeting link)
+    adminUpdate: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+        status: z.enum(['pending', 'confirmed', 'completed', 'cancelled']).optional(),
+        meetingLink: z.string().optional(),
+        adminNotes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') throw new Error('Forbidden');
+        const { getDb } = await import('./db');
+        const { qaSessions } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) throw new Error('Database not available');
+
+        const updates: Record<string, unknown> = {};
+        if (input.status) updates.status = input.status;
+        if (input.meetingLink !== undefined) updates.meetingLink = input.meetingLink;
+        if (input.adminNotes !== undefined) updates.adminNotes = input.adminNotes;
+
+        await database.update(qaSessions).set(updates).where(eq(qaSessions.id, input.sessionId));
+
+        // If confirmed and meeting link provided, notify the member
+        if (input.status === 'confirmed' && input.meetingLink) {
+          const [session] = await database.select().from(qaSessions).where(eq(qaSessions.id, input.sessionId));
+          if (session) {
+            const { sendQaConfirmedEmail } = await import('./emailService');
+            sendQaConfirmedEmail({
+              email: session.email,
+              name: session.name,
+              date: session.requestedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+              time: session.requestedTime,
+              meetingLink: input.meetingLink,
+            }).catch(console.error);
+          }
+        }
+
+        return { success: true };
+      }),
+  }),
+
   // Orders router
   orders: router({
     list: protectedProcedure.query(async ({ ctx }) => {
